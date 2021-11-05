@@ -1,6 +1,7 @@
 <template>
+  <global-header :user="currentUser" />
   <div class="container">
-    <column-list :list="list" />
+    <column-list :list="currentList" />
   </div>
 </template>
 
@@ -9,14 +10,22 @@
 import { defineComponent } from 'vue'
 
 // 导入组件
+// 导入页面 header 区域
+import GlobalHeader, { UserProps } from './components/HeaderComponent/GlobalHeader.vue'
 // 导入首页专栏部分组件
-import ColumnList, { ColumnProps } from './components/ColumnList.vue'
+import ColumnList, { ColumnProps } from './components/Home/ColumnList.vue'
 
 // 导入 boostrap 样式文件
 import 'bootstrap/dist/css/bootstrap.min.css'
 
+// GlobalHeader.vue 组件的数据
+const currentUser: UserProps = {
+  isLogin: true,
+  userName: 'liangshuang',
+  userId: 1551724864
+}
 // ColumnList.vue 组件的数据
-const testData: ColumnProps[] = [
+const currentList: ColumnProps[] = [
   {
     id: 1,
     title: 'test1的专栏',
@@ -46,11 +55,13 @@ const testData: ColumnProps[] = [
 export default defineComponent({
   name: 'App',
   components: {
+    GlobalHeader,
     ColumnList
   },
   setup() {
     return {
-      list: testData
+      currentUser: currentUser, // GlobalHeader.vue 组件的数据
+      currentList: currentList // ColumnList.vue 组件的数据
     }
   }
 })
