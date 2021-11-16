@@ -1,46 +1,58 @@
 <template>
+  <!-- 全局的头部 header 区域 -->
   <global-header :user="currentUser" />
+
+  <!-- 页面主题区域 -->
   <div class="container">
+    <!-- 首页的专栏区域 -->
     <column-list :list="currentList" />
-    <form>
+
+    <!-- 表单区域 -->
+    <validate-form @form-submit="onFormSubmit">
+      <!-- 输入邮箱区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <validate-input :rules="emailRules"></validate-input>
+        <label for="exampleInputEmail" class="form-label">邮箱地址</label>
+        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules" v-model="emailValue" ref="inputRef"></validate-input>
+        <!-- {{ emailValue }} -->
       </div>
+
+      <!-- 输入密码区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input type="password" class="form-control" id="exampleInputPassword1" />
+        <label for="exampleInputPassword" class="form-label">邮箱密码</label>
+        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码" :rules="passwordRules"></validate-input>
       </div>
-      <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-        <label class="form-check-label" for="exampleCheck1">Check me out</label>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+
+      <!-- 提交按钮区域（对应 ValidateForm.vue 组件 name 为 submit 的插槽） -->
+      <template #submit>
+        <span class="btn btn-danger">提交</span>
+      </template>
+    </validate-form>
   </div>
 </template>
 
 <script lang="ts">
 // 导入 vue 中的方法
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue';
+
+// 导入 boostrap 样式文件
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // 导入组件
 // 导入页面 header 区域
-import GlobalHeader, { UserProps } from './components/HeaderComponent/GlobalHeader.vue'
+import GlobalHeader, { UserProps } from './components/HeaderComponent/GlobalHeader.vue';
 // 导入首页专栏部分组件
-import ColumnList, { ColumnProps } from './components/Home/ColumnList.vue'
+import ColumnList, { ColumnProps } from './components/Home/ColumnList.vue';
 // 导入表单验证组件
-import ValidateInput, { RulesProp } from './components/ValidateComponents/ValidateInput.vue'
-
-// 导入 boostrap 样式文件
-import 'bootstrap/dist/css/bootstrap.min.css'
+import ValidateInput, { RulesProp } from './components/ValidateComponents/ValidateInput.vue';
+// 导入表单区域组件
+import ValidateForm from './components/ValidateComponents/ValidateForm.vue';
 
 // GlobalHeader.vue 组件的数据
 const currentUser: UserProps = {
   isLogin: true,
   userName: 'liangshuang',
   userId: 1551724864
-}
+};
 // ColumnList.vue 组件的数据
 const currentList: ColumnProps[] = [
   {
@@ -67,29 +79,51 @@ const currentList: ColumnProps[] = [
     description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
     avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
   }
-]
+];
 
 export default defineComponent({
   name: 'App',
   components: {
     GlobalHeader,
     ColumnList,
-    ValidateInput
+    ValidateInput,
+    ValidateForm
   },
   setup() {
+    // 表单输入内容
+    const emailValue = ref('');
+
+    const inputRef = ref<any>();
+
     // 创建邮箱验证规则
     const emailRules: RulesProp = [
       { type: 'required', message: '邮箱不能为空' },
       { type: 'email', message: '请输入正确的邮箱格式：xxxxxx@xx.com' }
-    ]
+    ];
+
+    // 创建邮箱密码验证规则
+    const passwordRules: RulesProp = [
+      { type: 'required', message: '邮箱密码不能为空' },
+      { type: 'pwdLength', message: '密码长度为 6-14 个字符' }
+    ];
+
+    // 接收 ValidateForm.vue 组件中提交按钮提交事件的值
+    const onFormSubmit = (result: boolean) => {
+      // result 就是 ValidateForm.vue 组件中 context.emit('form-submit', 参数2) 体检按钮事件的参数2
+      console.log('resulet: ', inputRef.value.validateInput());
+    };
 
     return {
       currentUser: currentUser, // GlobalHeader.vue 组件的数据
       currentList: currentList, // ColumnList.vue 组件的数据
-      emailRules
-    }
+      emailValue, // 表单框的内容
+      emailRules, // 邮箱需要进行验证的规则
+      passwordRules, // 邮箱密码需要进行验证的规则
+      onFormSubmit, // 接收 ValidateForm.vue 组件中提交按钮提交事件的值
+      inputRef
+    };
   }
-})
+});
 </script>
 
 <style lang="less" scoped></style>
