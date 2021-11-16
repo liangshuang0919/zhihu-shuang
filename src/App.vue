@@ -2,6 +2,21 @@
   <global-header :user="currentUser" />
   <div class="container">
     <column-list :list="currentList" />
+    <form>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <validate-input :rules="emailRules"></validate-input>
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1" />
+      </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="exampleCheck1" />
+        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
   </div>
 </template>
 
@@ -14,6 +29,8 @@ import { defineComponent } from 'vue'
 import GlobalHeader, { UserProps } from './components/HeaderComponent/GlobalHeader.vue'
 // 导入首页专栏部分组件
 import ColumnList, { ColumnProps } from './components/Home/ColumnList.vue'
+// 导入表单验证组件
+import ValidateInput, { RulesProp } from './components/ValidateComponents/ValidateInput.vue'
 
 // 导入 boostrap 样式文件
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -35,13 +52,13 @@ const currentList: ColumnProps[] = [
   {
     id: 2,
     title: 'test2的专栏',
-    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
+    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧,这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
     avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
   },
   {
     id: 3,
     title: 'test3的专栏',
-    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧'
+    description: '这是的test3专栏，有一段非常有意思的简介，可以更新一下欧 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧'
     // avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
   },
   {
@@ -56,15 +73,23 @@ export default defineComponent({
   name: 'App',
   components: {
     GlobalHeader,
-    ColumnList
+    ColumnList,
+    ValidateInput
   },
   setup() {
+    // 创建邮箱验证规则
+    const emailRules: RulesProp = [
+      { type: 'required', message: '邮箱不能为空' },
+      { type: 'email', message: '请输入正确的邮箱格式：xxxxxx@xx.com' }
+    ]
+
     return {
       currentUser: currentUser, // GlobalHeader.vue 组件的数据
-      currentList: currentList // ColumnList.vue 组件的数据
+      currentList: currentList, // ColumnList.vue 组件的数据
+      emailRules
     }
   }
 })
 </script>
 
-<style></style>
+<style lang="less" scoped></style>
