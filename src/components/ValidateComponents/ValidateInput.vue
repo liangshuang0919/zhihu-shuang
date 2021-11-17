@@ -7,7 +7,10 @@
 
 <script lang="ts">
 // 导入要用到的 vue 中的方法
-import { defineComponent, reactive, PropType } from 'vue';
+import { defineComponent, reactive, PropType, onMounted } from 'vue';
+
+// 导入 ValidateForm.vue 组件的 emitter 监听器
+import { emitter } from './ValidateForm.vue';
 
 // 初始化表单验证时候的验证规则，合并成一个接口
 interface RuleProp {
@@ -78,6 +81,11 @@ export default defineComponent({
       }
       return true;
     };
+
+    // 页面加载的时候触发 emitter 监听器，进行组件间通信
+    onMounted(() => {
+      emitter.emit('form-item-created', validateInput);
+    });
 
     return {
       inputRef, // 表单的内容，会在页面中渲染出了

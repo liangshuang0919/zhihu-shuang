@@ -12,14 +12,14 @@
       <!-- 输入邮箱区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3">
         <label for="exampleInputEmail" class="form-label">邮箱地址</label>
-        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules" v-model="emailValue" ref="inputRef"></validate-input>
+        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules" v-model="emailValue" ref="emailRef"></validate-input>
         <!-- {{ emailValue }} -->
       </div>
 
       <!-- 输入密码区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3">
         <label for="exampleInputPassword" class="form-label">邮箱密码</label>
-        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码" :rules="passwordRules"></validate-input>
+        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码" :rules="passwordRules" v-model="passwordValue"></validate-input>
       </div>
 
       <!-- 提交按钮区域（对应 ValidateForm.vue 组件 name 为 submit 的插槽） -->
@@ -90,10 +90,14 @@ export default defineComponent({
     ValidateForm
   },
   setup() {
-    // 表单输入内容
+    // 邮箱表单输入框内容
     const emailValue = ref('');
 
-    const inputRef = ref<any>();
+    // 密码表单输入框内容
+    const passwordValue = ref('');
+
+    // 获取邮箱输入表单节点
+    const emailRef = ref<any>();
 
     // 创建邮箱验证规则
     const emailRules: RulesProp = [
@@ -110,17 +114,18 @@ export default defineComponent({
     // 接收 ValidateForm.vue 组件中提交按钮提交事件的值
     const onFormSubmit = (result: boolean) => {
       // result 就是 ValidateForm.vue 组件中 context.emit('form-submit', 参数2) 体检按钮事件的参数2
-      console.log('resulet: ', inputRef.value.validateInput());
+      console.log('resulet: ', result);
     };
 
     return {
       currentUser: currentUser, // GlobalHeader.vue 组件的数据
       currentList: currentList, // ColumnList.vue 组件的数据
-      emailValue, // 表单框的内容
+      emailValue, // 邮箱表单输入框内容
+      passwordValue, // 密码表单输入框内容
       emailRules, // 邮箱需要进行验证的规则
       passwordRules, // 邮箱密码需要进行验证的规则
       onFormSubmit, // 接收 ValidateForm.vue 组件中提交按钮提交事件的值
-      inputRef
+      emailRef // 邮箱输入框的节点
     };
   }
 });
