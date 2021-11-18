@@ -1,0 +1,56 @@
+<template>
+  <!-- 专栏详情页区域 -->
+  <div class="column-detail-page w-75 mx-auto">
+    <post-header :column="column"></post-header>
+
+    <!-- 专栏详情页文章具体内容区域 -->
+    <post-list :list="list"></post-list>
+  </div>
+</template>
+
+<script lang="ts">
+// 导入要用到的 vue 的方法
+import { defineComponent, onMounted } from 'vue';
+
+// 导入 vue-router 的钩子函数
+// useRoute 方法是获取路由的具体信息，是一个对象
+import { useRoute } from 'vue-router';
+
+// 导入专栏详情页的数据
+import { testColumn, testPosts } from '../../data/testData';
+
+// 导入 PostHeader.vue 组件（专栏详情页头部介绍信息）
+import PostHeader from '../../components/PostComponents/PostHeader.vue';
+// 导入 PostList.vue 组件（专栏详情页文章具体内容组件）
+import PostList from '../../components/PostComponents/PostList.vue';
+
+export default defineComponent({
+  name: 'ColumnDetails',
+  components: {
+    PostHeader, // 专栏详情页头部介绍信息
+    PostList // 专栏详情页文章具体内容组件
+  },
+  setup() {
+    // 初始化 route，可以获取到对应的路由对象
+    const route = useRoute();
+
+    // 获取专栏详情页的文章 id
+    // 获取的 currentId 是一个字符串，需要进行类型转换
+    const currentId = +route.params.id;
+
+    // 获取首页专栏区域文章 testData 数据的 id 与当前路由 id 相同的数据
+    const column = testColumn.find((item) => item.id === currentId);
+
+    // 获取专栏详情页文章 testPosts 数据的 id 与当前路由 id 相同的数据
+    const list = testPosts.filter((post) => post.columnId === currentId);
+
+    return {
+      // route // 路由对象（测试用的）
+      column, // 首页专栏区域的数据
+      list // 专栏详情页的数据
+    };
+  }
+});
+</script>
+
+<style scoped></style>
