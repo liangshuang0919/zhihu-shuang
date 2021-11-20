@@ -1,19 +1,13 @@
+// 导入 vuex 中规定的数据
+// PostProps 是专栏详情页的数据
+import { PostProps } from '../store'
+
 // 首页文章专栏区域的数据
 export interface ColumnProps {
   id: number; // 专栏的标识符
   title: string; // 专栏的标题
   description: string; // 专栏的介绍
   avatar?: string; // 专栏的图片
-}
-
-// 专栏详情页的数据
-export interface PostProps {
-  id: number; // 文章的标识符
-  title: string; // 文章的标题
-  content: string; // 文章的内容
-  image?: string; // 文章的图片
-  createdAt: string; // 文章的时间
-  columnId: number; // 将专栏详情页的数据与首页的专栏区域的内容，一一对应起来
 }
 
 export const testColumn: ColumnProps[] = [
@@ -67,5 +61,29 @@ export const testPosts: PostProps[] = [
     image: 'https://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5edcc2329f2b4e28352b75eb.jpg?x-oss-process=image/resize,m_fill,m_pad,w_200,h_110',
     createdAt: '2020-06-11 10:34:22',
     columnId: 1
+  },
+  {
+    id: 1,
+    title: '这是我的第一篇文章',
+    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+    image: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee1980819f4ae08ac78d458.png?x-oss-process=image/resize,m_fill,m_pad,w_200,h_110',
+    createdAt: '2020-06-11 10:34:22',
+    columnId: 2
+  },
+  {
+    id: 2,
+    title: '这是我的第二篇文章',
+    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+    image: 'https://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5edcc2329f2b4e28352b75eb.jpg?x-oss-process=image/resize,m_fill,m_pad,w_200,h_110',
+    createdAt: '2020-06-11 10:34:22',
+    columnId: 2
+  },
+  {
+    id: 3,
+    title: '这是我的第三篇文章',
+    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+
+    createdAt: '2020-06-11 10:34:22',
+    columnId: 2
   }
 ]

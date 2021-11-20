@@ -17,7 +17,7 @@
           <!-- 写法一：to 使用对象的形式 -->
           <!-- <router-link :to="{ name: 'column_details', params: { id: column.id } }" class="btn btn-outline-primary">进入专栏</router-link> -->
           <!-- 写法二：to 使用模板字符串 -->
-          <router-link :to="`/column_details/${column.id}`" class="btn btn-outline-primary">进入专栏</router-link>
+          <router-link :to="`/column/${column.id}`" class="btn btn-outline-primary">进入专栏</router-link>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@ export interface ColumnProps {
 }
 
 // 解决 require 报错的问题
-declare const require: any;
+declare const require;
 
 export default defineComponent({
   name: 'ColumnList',
@@ -48,8 +48,10 @@ export default defineComponent({
     }
   },
   setup(props) {
+    // 页面加载的时候，将专栏列表页所需要的数据进行便利操作
     const columnList = computed(() => {
       return props.list.map((column) => {
+        // 当专栏列表页没有图片的时候，默认使用本地的一张图片
         if (!column.avatar) {
           column.avatar = require('@/assets/images/column.jpg');
         }

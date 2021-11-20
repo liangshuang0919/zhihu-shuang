@@ -16,7 +16,9 @@
     <h4 class="font-weight-bold text-center">发现精彩</h4>
 
     <!-- 首页的专栏区域 -->
-    <column-list :list="currentList" />
+    <column-list :list="columnData" />
+
+    <h2>{{ columnNumber }}</h2>
 
     <!-- <button class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25" @click="loadMorePage" v-if="!isLastPage">加载更多</button> -->
   </div>
@@ -24,47 +26,35 @@
 
 <script lang="ts">
 // 导入要用到的 vue 方法
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
+
+// 导入 vuex 的获取 vuex 数据的 useStore 方法
+import { useStore } from 'vuex';
+
+// 导入 vuex 中定义的全局数据 GlobalDataProps 接口
+import { GlobalDataProps } from '../../store';
 
 // 导入首页专栏部分组件和定义的 ColumnProps 数据类型
-import ColumnList, { ColumnProps } from '../../components/ColumnComponents/ColumnList.vue';
-
-// ColumnList.vue 组件的数据
-const currentList: ColumnProps[] = [
-  {
-    id: 1,
-    title: 'test1的专栏',
-    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧, 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
-  },
-  {
-    id: 2,
-    title: 'test2的专栏',
-    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧,这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
-  },
-  {
-    id: 3,
-    title: 'test3的专栏',
-    description: '这是的test3专栏，有一段非常有意思的简介，可以更新一下欧 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧'
-    // avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
-  },
-  {
-    id: 4,
-    title: 'test4的专栏',
-    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
-  }
-];
+import ColumnList from '../../components/ColumnComponents/ColumnList.vue';
 
 export default defineComponent({
   name: 'Home',
   components: {
     ColumnList // 注册首页专栏部分组件
   },
-  setup(props) {
+  setup() {
+    // 获取全局 vuex 数据
+    const store = useStore<GlobalDataProps>();
+
+    // 通过 vuex 获取全局的一个首页专栏列表的数据
+    const columnData = computed(() => store.state.columns);
+
+    // 获取首页专栏列表中，专栏 id 大于 2 的专栏数量
+    const columnNumber = computed(() => store.getters.columnsNumber);
+
     return {
-      currentList // ColumnList.vue 组件的数据
+      columnData, // 首页专栏列表的数据
+      columnNumber // 首页专栏列表数目
     };
   }
 });

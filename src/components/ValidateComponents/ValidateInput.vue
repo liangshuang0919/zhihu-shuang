@@ -1,6 +1,24 @@
 <template>
   <div class="validate-input-container pb-3">
-    <input class="form-control" :class="{ 'is-invalid': inputRef.error }" :value="inputRef.val" @blur="validateInput" @input="updateValue" v-bind="$attrs" />
+    <input
+      v-if="tag !== 'textarea'"
+      class="form-control"
+      :class="{ 'is-invalid': inputRef.error }"
+      :value="inputRef.val"
+      @blur="validateInput"
+      @input="updateValue"
+      v-bind="$attrs"
+    />
+    <textarea
+      v-else
+      style="resize: none"
+      class="form-control"
+      :class="{ 'is-invalid': inputRef.error }"
+      :value="inputRef.val"
+      @blur="validateInput"
+      @input="updateValue"
+      v-bind="$attrs"
+    />
     <span v-show="inputRef.error" class="invalid-feedback">{{ inputRef.message }}</span>
   </div>
 </template>
@@ -23,6 +41,9 @@ interface RuleProp {
 // 因为表单验证的时候可以使用一系列的规则，所以将要用到的规则合并为一个数组
 export type RulesProp = RuleProp[];
 
+// 创建一个 TagType 规则，控制输入框标签显示 input 还是 textarea 标签
+export type TagType = 'input' | 'textarea';
+
 // 验证邮箱书写规则的正则表达式
 const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
@@ -30,7 +51,12 @@ export default defineComponent({
   name: 'ValidateInput',
   props: {
     rules: Array as PropType<RulesProp>, // 从父组件传递过来的规则数组
-    modelValue: String // 进行表单双向绑定的 modelValue 值
+    modelValue: String, // 进行表单双向绑定的 modelValue 值
+    // 控制输入框标签的类型，是为 input 还是 textarea
+    tag: {
+      type: String as PropType<TagType>,
+      default: 'input'
+    }
   },
   inheritAttrs: false, // 禁用 Attribute 继承
   setup(props, context) {
@@ -96,4 +122,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style lang="less" scoped></style>

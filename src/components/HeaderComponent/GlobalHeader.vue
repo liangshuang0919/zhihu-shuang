@@ -1,15 +1,23 @@
 <template>
+  <!-- 全局头部 header 区域 -->
   <nav class="navbar navbar-dark bg-primary justify-content-between mb-4 py-3">
     <div class="container-fluid">
-      <router-link class="navbar-brand vertical-align-center introduce" to="/"> Create By Shuang </router-link>
+      <!-- 左侧 logo 和网站名区域 -->
+      <router-link class="navbar-brand vertical-align-center introduce" to="/">
+        <img src="../../assets/images/my_logo.jpg" alt="凉爽爽爽爽爽爽爽爽爽" width="30" height="30" class="d-inline-block align-text-top" />
+        <span class="d-inline-block align-text-top">&nbsp;&nbsp;Create By Shuang</span>
+      </router-link>
+
+      <!-- 右侧登录注册按钮 -->
       <ul v-if="user ? !user.isLogin : false" class="list-inline mb-0">
         <li class="list-inline-item"><router-link to="/login" class="btn btn-primary my-2">登录</router-link></li>
         <li class="list-inline-item"><router-link to="/login" class="btn btn-outline-light my-2">注册</router-link></li>
       </ul>
+      <!-- 右侧登录后，个人下拉菜单 -->
       <ul v-else class="list-inline mb-0">
         <li class="list-inline-item">
           <drop-down :title="`你好 ${user ? user.userName : '张三'}`">
-            <drop-down-item><a href="javascript:;" class="dropdown-item">新建文章</a></drop-down-item>
+            <drop-down-item><router-link to="/create" class="dropdown-item">新建文章</router-link></drop-down-item>
             <drop-down-item><a href="#" class="dropdown-item">编辑资料</a></drop-down-item>
             <drop-down-item><a href="javascript:;" class="dropdown-item">退出登录</a></drop-down-item>
           </drop-down>

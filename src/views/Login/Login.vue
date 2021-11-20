@@ -1,6 +1,6 @@
 <template>
   <div class="login-page mx-auto p-3 w-330">
-    <h5 class="my-4 text-center">登录到者也</h5>
+    <h5 class="my-4 text-center">先登录，才能进入凉爽爽爽爽爽爽爽爽爽的专栏</h5>
     <!-- 表单区域 -->
     <validate-form @form-submit="onFormSubmit">
       <!-- 输入邮箱区域（对应 ValidateForm.vue 组件的默认插槽） -->
@@ -27,6 +27,9 @@
 // 导入要使用到的 vue 的方法
 import { defineComponent, ref } from 'vue';
 
+// 导入 vuex 的获取 vuex 数据的 useStore 方法
+import { useStore } from 'vuex';
+
 // 导入 vue-router 的钩子函数
 // useRouter 方法是定义路由的一些列行为
 import { useRouter } from 'vue-router';
@@ -43,6 +46,9 @@ export default defineComponent({
     ValidateInput
   },
   setup() {
+    // 获取全局 vuex 数据
+    const store = useStore();
+
     // 邮箱表单输入框内容
     const emailValue = ref('');
 
@@ -67,14 +73,12 @@ export default defineComponent({
     // 接收 ValidateForm.vue 组件中提交按钮提交事件的值
     const onFormSubmit = (result: boolean) => {
       // result 就是 ValidateForm.vue 组件中 context.emit('form-submit', 参数2) 体检按钮事件的参数2
-      console.log('resulet: ', result);
       // 当登陆成功的时候，进行路由的跳转
       if (result) {
-        // 将路由跳转到 column_details 专栏详情页
-        router.push({
-          name: 'column_details',
-          params: { id: 1 }
-        });
+        // 用户登录成功的时候，跳转到首页去
+        router.push('/');
+        // 用户登录成功的时候，调用 vuex 的 mutations 中的 login 方法，修改用户登录信息
+        store.commit('login');
       }
     };
 

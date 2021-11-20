@@ -33,7 +33,8 @@
 import { defineComponent, PropType, computed } from 'vue';
 
 // 导入页面所需要的数据
-import { PostProps, ImageProps } from '../../data/store';
+import { ImageProps } from '../../store';
+import { PostProps } from '../../data/testData';
 
 // 导入辅助的方法
 // generateFitUrl 方法是将图片进行获取自定义大小
