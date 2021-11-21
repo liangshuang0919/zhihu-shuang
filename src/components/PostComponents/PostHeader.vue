@@ -18,10 +18,10 @@
 
 <script lang="ts">
 // 导入将要用到的 vue 的方法
-import { defineComponent, PropType, reactive, toRefs } from 'vue';
+import { defineComponent, PropType, reactive, toRefs } from 'vue'
 
 // 导入页面所需要的数据
-import { ColumnProps } from '../../data/testData';
+import { ColumnProps } from '../../data/testData'
 
 export default defineComponent({
   name: 'PostHeader',
@@ -34,16 +34,15 @@ export default defineComponent({
   },
   setup(props) {
     // 因为传过来的 column 为对象类型，需要使用 reactive 方法进行整合
-    const column = reactive({});
-
+    const column = reactive({})
     // 经过 reactive 方法进行整合之后，还要用 toRefs 方法对值进行一次拷贝
-    const tefColumn = toRefs(column);
+    const tefColumn = toRefs(column)
 
     return {
       tefColumn // 这个就是 column
-    };
+    }
   }
-});
+})
 </script>
 
 <style scoped></style>

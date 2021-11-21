@@ -5,7 +5,10 @@
       <div class="card h-100 shadow-sm">
         <div class="card-body text-center">
           <!-- 专栏图片 -->
-          <img :src="column.avatar" :alt="column.title" class="rounded-circle border border-weight w-25 my-3" />
+          <!-- 这个是测试数据所用的 -->
+          <!-- <img :src="column.avatar" :alt="column.title" class="rounded-circle border border-weight w-25 my-3" /> -->
+          <!-- 这个是真实的后端数据 -->
+          <img :src="column.avatar.url" :alt="column.title" class="rounded-circle border border-weight my-3" />
 
           <!-- 专栏名称 -->
           <h5 class="card-title">{{ column.title }}</h5>
@@ -26,18 +29,19 @@
 
 <script lang="ts">
 // 导入 vue 中的方法
-import { defineComponent, PropType, computed } from 'vue';
+import { defineComponent, PropType, computed } from 'vue'
 
 // 定义专栏数据接口
+// import { ColumnProps } from '../../store'
 export interface ColumnProps {
-  id: number; // 当前专栏的标识号
-  title: string; // 当前专栏的标题
-  avatar?: string; // 当前专栏的图片
-  description: string; // 当前专栏的简介内容
+  id: number // 当前专栏的标识号
+  title: string // 当前专栏的标题
+  avatar?: string // 当前专栏的图片
+  description: string // 当前专栏的简介内容
 }
 
 // 解决 require 报错的问题
-declare const require;
+declare const require
 
 export default defineComponent({
   name: 'ColumnList',
@@ -50,20 +54,30 @@ export default defineComponent({
   setup(props) {
     // 页面加载的时候，将专栏列表页所需要的数据进行便利操作
     const columnList = computed(() => {
-      return props.list.map((column) => {
+      return props.list.map(column => {
         // 当专栏列表页没有图片的时候，默认使用本地的一张图片
         if (!column.avatar) {
-          column.avatar = require('@/assets/images/column.jpg');
+          column.avatar.url = require('@/assets/images/column.jpg')
         }
-        return column;
-      });
-    });
+        //  else {
+        //   // 因为图片是从阿里云上获取的，可以控制图片的大小
+        //   // 这个表示将图片设为 50 * 50 的大小
+        //   column.avatar.url = column.avatar.url + '?x-oss-process=image/resize,m_pad,h_50,w_50'
+        // }
+        return column
+      })
+    })
 
     return {
       columnList
-    };
+    }
   }
-});
+})
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+.card-body img {
+  width: 50px;
+  height: 50px;
+}
+</style>

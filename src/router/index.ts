@@ -16,40 +16,44 @@ const CreatePost = () => import('@/views/CreatePost/CreatePost.vue') // 编辑�
 // 创建 vue-router 实例
 const router = createRouter({
   history: routerHistory,
-  routes: [{
-    path: '/',
-    name: 'home',
-    component: Home,
-    // 元信息
-    meta: {
-      title: 'Shuang-Home'
-    }
-  }, {
-    path: '/login',
-    name: 'login',
-    component: Login,
-    // 元信息
-    meta: {
-      redirectAlreadyLogin: true, // 用户已经登录
-      title: 'Shuang-Login'
-    }
-  }, {
-    path: '/column/:id',
-    name: 'column',
-    component: ColumnDetails,
-    // 元信息
-    meta: {
-      title: 'Shuang-ColumnDetails'
-    }
-  }, {
-    path: '/create',
-    name: 'create',
-    component: CreatePost,
-    // 元信息
-    meta: {
-      requiredLogin: true // 只有登录了的用户才能创建帖子
-    }
-  }]
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: Home,
+      // 元信息
+      meta: {
+        title: 'Shuang-Home'
+      }
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      // 元信息
+      meta: {
+        redirectAlreadyLogin: true, // 用户已经登录
+        title: 'Shuang-Login'
+      }
+    },
+    {
+      path: '/column/:id',
+      name: 'column',
+      component: ColumnDetails,
+      // 元信息
+      meta: {
+        title: 'Shuang-ColumnDetails'
+      }
+    },
+    {
+      path: '/create',
+      name: 'create',
+      component: CreatePost,
+      // 元信息
+      meta: {
+        requiredLogin: true // 只有登录了的用户才能创建帖子
+      }
+    }]
 })
 
 // 设置路由守卫

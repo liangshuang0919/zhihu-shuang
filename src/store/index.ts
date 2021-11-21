@@ -1,10 +1,13 @@
 // 导入创建 vuex 的 createStore
 import { createStore } from 'vuex'
 
+// 导入 axios 网络封装模块
+import axios from 'axios'
+
 // 导入 testData 中两个数据
 // testColumn 是首页专栏列表的数据
 // testPosts 是专栏详情页的列表数据
-import { testColumn, testPosts, ColumnProps } from '../data/testData'
+import { testColumn, testPosts } from '../data/testData'
 
 // 定义的全局用户的信息接口
 export interface UserProps {
@@ -12,6 +15,21 @@ export interface UserProps {
   userName?: string; // 用户名
   userId?: string; // 用户的 ID
   columnId?: number // 要新建文章的专栏的 id
+}
+
+export interface ImageProps {
+  _id?: string;
+  url?: string;
+  createdAt?: string;
+  fitUrl?: string;
+}
+
+// 定义的首页专栏列表的数据接口
+export interface ColumnProps {
+  id: number; // 专栏的标识符
+  title: string; // 专栏的标题
+  avatar?: ImageProps; // 专栏的图片
+  description: string; // 转浏览的描述
 }
 
 // 定义的专栏详情页的数据接口
@@ -37,20 +55,14 @@ export interface GlobalDataProps {
 //   data: P;
 // }
 
-export interface ImageProps {
-  _id?: string;
-  url?: string;
-  createdAt?: string;
-  fitUrl?: string;
-}
 // interface ListProps<P> {
 //   [id: string]: P;
 // }
 
-export interface GlobalErrorProps {
-  status: boolean;
-  message?: string;
-}
+// export interface GlobalErrorProps {
+//   status: boolean;
+//   message?: string;
+// }
 
 // const asyncAndCommit = async (url: string, mutationName: string,
 //   commit: Commit, config: AxiosRequestConfig = { method: 'get' }, extraData?: any) => {
@@ -82,6 +94,19 @@ const store = createStore<GlobalDataProps>({
     // 创建新的文章
     createPost(state, newPost) {
       state.posts.push(newPost);
+    },
+    // 处理从后端获取的首页专栏列表的数据
+    // 第二个参数 rawData 是后端传递过来的数据
+    fetchColumns(state, rawData) {
+      state.columns = rawData.data.list
+    }
+  },
+  actions: {
+    // 获取首页专栏列表的后端数据
+    fetchColumns(context) {
+      axios.get('/columns').then(res => {
+        context.commit('fetchColumns', res.data);
+      })
     }
   },
   getters: {
@@ -101,134 +126,3 @@ const store = createStore<GlobalDataProps>({
 })
 
 export default store // 导出 vuex 状态管理的 store
-
-// const store = createStore<GlobalDataProps>({
-//   state: {
-//     token: localStorage.getItem('token') || '',
-//     error: { status: false },
-//     loading: false,
-//     columns: { data: {}, isLoaded: false, total: 0 },
-//     posts: { data: {}, loadedColumns: [] },
-//     user: { isLogin: false }
-//   },
-//   mutations: {
-//     // login(state) {
-//     //   state.user = { ...state.user, isLogin: true, name: 'viking' }
-//     // },
-//     createPost(state, newPost) {
-//       state.posts.data[newPost._id] = newPost
-//     },
-//     fetchColumns(state, rawData) {
-//       const { data } = state.columns
-//       const { list, count } = rawData.data
-//       state.columns = {
-//         data: { ...data, ...arrToObj(list) },
-//         total: count,
-//         isLoaded: true
-//       }
-//     },
-//     fetchColumn(state, rawData) {
-//       state.columns.data[rawData.data._id] = rawData.data
-//     },
-//     fetchPosts(state, { data: rawData, extraData: columnId }) {
-//       state.posts.data = { ...state.posts.data, ...arrToObj(rawData.data.list) }
-//       state.posts.loadedColumns.push(columnId)
-//     },
-//     fetchPost(state, rawData) {
-//       state.posts.data[rawData.data._id] = rawData.data
-//     },
-//     deletePost(state, { data }) {
-//       delete state.posts.data[data._id]
-//     },
-//     updatePost(state, { data }) {
-//       state.posts.data[data._id] = data
-//     },
-//     setLoading(state, status) {
-//       state.loading = status
-//     },
-//     setError(state, e: GlobalErrorProps) {
-//       state.error = e
-//     },
-//     fetchCurrentUser(state, rawData) {
-//       state.user = { isLogin: true, ...rawData.data }
-//     },
-//     login(state, rawData) {
-//       const { token } = rawData.data
-//       state.token = token
-//       localStorage.setItem('token', token)
-//       axios.defaults.headers.common.Authorization = `Bearer ${token}`
-//     },
-//     logout(state) {
-//       state.token = ''
-//       state.user = { isLogin: false }
-//       localStorage.remove('token')
-//       delete axios.defaults.headers.common.Authorization
-//     }
-//   },
-//   actions: {
-//     fetchColumns({ state, commit }, params = {}) {
-//       const { currentPage = 1, pageSize = 6 } = params
-//       // if (!state.columns.isLoaded) {
-//       //   return asyncAndCommit('/columns', 'fetchColumns', commit)
-//       // }
-//       return asyncAndCommit(`/columns?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit)
-//     },
-//     fetchColumn({ state, commit }, cid) {
-//       if (!state.columns.data[cid]) {
-//         return asyncAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
-//       }
-//     },
-//     fetchPosts({ state, commit }, cid) {
-//       if (!state.posts.loadedColumns.includes(cid)) {
-//         return asyncAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit, { method: 'get' }, cid)
-//       }
-//     },
-//     fetchPost({ state, commit }, id) {
-//       const currentPost = state.posts.data[id]
-//       if (!currentPost || !currentPost.content) {
-//         return asyncAndCommit(`/posts/${id}`, 'fetchPost', commit)
-//       } else {
-//         return Promise.resolve({ data: currentPost })
-//       }
-//     },
-//     updatePost({ commit }, { id, payload }) {
-//       return asyncAndCommit(`/posts/${id}`, 'updatePost', commit, {
-//         method: 'patch',
-//         data: payload
-//       })
-//     },
-//     fetchCurrentUser({ commit }) {
-//       return asyncAndCommit('/user/current', 'fetchCurrentUser', commit)
-//     },
-//     login({ commit }, payload) {
-//       return asyncAndCommit('/user/login', 'login', commit, { method: 'post', data: payload })
-//     },
-//     createPost({ commit }, payload) {
-//       return asyncAndCommit('/posts', 'createPost', commit, { method: 'post', data: payload })
-//     },
-//     deletePost({ commit }, id) {
-//       return asyncAndCommit(`/posts/${id}`, 'deletePost', commit, { method: 'delete' })
-//     },
-//     loginAndFetch({ dispatch }, loginData) {
-//       return dispatch('login', loginData).then(() => {
-//         return dispatch('fetchCurrentUser')
-//       })
-//     }
-//   },
-//   getters: {
-//     getColumns: (state) => {
-//       return objToArr(state.columns.data)
-//     },
-//     getColumnById: (state) => (id: string) => {
-//       return state.columns.data[id]
-//     },
-//     getPostsByCid: (state) => (cid: string) => {
-//       return objToArr(state.posts.data).filter(post => post.column === cid)
-//     },
-//     getCurrentPost: (state) => (id: string) => {
-//       return state.posts.data[id]
-//     }
-//   }
-// })
-
-// export default store
