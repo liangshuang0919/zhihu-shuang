@@ -6,18 +6,20 @@
       <!-- 输入邮箱区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3">
         <label for="exampleInputEmail" class="form-label">邮箱地址</label>
-        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules" v-model="emailValue" ref="emailRef"></validate-input>
+        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules"
+          v-model="emailValue" ref="emailRef"></validate-input>
       </div>
 
       <!-- 输入密码区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3">
         <label for="exampleInputPassword" class="form-label">邮箱密码</label>
-        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码" :rules="passwordRules" v-model="passwordValue"></validate-input>
+        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码" :rules="passwordRules"
+          v-model="passwordValue"></validate-input>
       </div>
 
       <!-- 提交按钮区域（对应 ValidateForm.vue 组件 name 为 submit 的插槽） -->
       <template #submit>
-        <span class="btn btn-danger">提交</span>
+        <span class="btn btn-danger">登录</span>
       </template>
     </validate-form>
   </div>
@@ -25,19 +27,19 @@
 
 <script lang="ts">
 // 导入要使用到的 vue 的方法
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref } from 'vue'
 
 // 导入 vuex 的获取 vuex 数据的 useStore 方法
-import { useStore } from 'vuex';
+import { useStore } from 'vuex'
 
 // 导入 vue-router 的钩子函数
 // useRouter 方法是定义路由的一些列行为
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 // 导入表单区域组件
-import ValidateForm from '../../components/ValidateComponents/ValidateForm.vue';
+import ValidateForm from '../../components/ValidateComponents/ValidateForm.vue'
 // 导入表单验证组件
-import ValidateInput, { RulesProp } from '../../components/ValidateComponents/ValidateInput.vue';
+import ValidateInput, { RulesProp } from '../../components/ValidateComponents/ValidateInput.vue'
 
 export default defineComponent({
   name: 'Login',
@@ -47,40 +49,47 @@ export default defineComponent({
   },
   setup() {
     // 获取全局 vuex 数据
-    const store = useStore();
+    const store = useStore()
 
     // 邮箱表单输入框内容
-    const emailValue = ref('');
+    const emailValue = ref('')
 
     // 密码表单输入框内容
-    const passwordValue = ref('');
+    const passwordValue = ref('')
 
     // 初始化 router，用来定义路由的一系列行为
-    const router = useRouter();
+    const router = useRouter()
 
     // 创建邮箱验证规则
     const emailRules: RulesProp = [
       { type: 'required', message: '邮箱不能为空' },
       { type: 'email', message: '请输入正确的邮箱格式：xxxxxx@xx.com' }
-    ];
+    ]
 
     // 创建邮箱密码验证规则
     const passwordRules: RulesProp = [
       { type: 'required', message: '邮箱密码不能为空' },
       { type: 'pwdLength', message: '密码长度为 6-14 个字符' }
-    ];
+    ]
 
     // 接收 ValidateForm.vue 组件中提交按钮提交事件的值
     const onFormSubmit = (result: boolean) => {
       // result 就是 ValidateForm.vue 组件中 context.emit('form-submit', 参数2) 体检按钮事件的参数2
       // 当登陆成功的时候，进行路由的跳转
       if (result) {
-        // 用户登录成功的时候，跳转到首页去
-        router.push('/');
-        // 用户登录成功的时候，调用 vuex 的 mutations 中的 login 方法，修改用户登录信息
-        store.commit('login');
+        // 用户登录时携带的信息
+        const payload = {
+          email: emailValue.value, // 用户邮箱
+          password: passwordValue.value // 用户邮箱密码
+        }
+        // 调用 store 的 login 异步请求方法，获取 token
+        store.dispatch('login', payload).then((data) => {
+          console.log(data)
+          // 用户登录成功的时候，跳转到首页去
+          router.push('/')
+        })
       }
-    };
+    }
 
     return {
       emailValue, // 邮箱表单输入框内容
@@ -88,9 +97,9 @@ export default defineComponent({
       emailRules, // 邮箱需要进行验证的规则
       passwordRules, // 邮箱密码需要进行验证的规则
       onFormSubmit // 接收 ValidateForm.vue 组件中提交按钮提交事件的值
-    };
+    }
   }
-});
+})
 </script>
 
 <style scoped></style>

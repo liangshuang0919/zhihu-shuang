@@ -1,24 +1,24 @@
 <template>
   <!-- 专栏详情页面的文章展示区域 -->
   <div class="post-list">
-    <article v-for="post in posts" :key="post.id" class="card mb-3 shadow-sm">
+    <article v-for="post in posts" :key="post._id" class="card mb-3 shadow-sm">
       <div class="card-body">
         <!-- 文章标题 -->
         <h4>
-          <router-link :to="`/posts/${post.id}/`">{{ post.title }}</router-link>
+          <router-link :to="`/posts/${post._id}/`">{{ post.title }}</router-link>
         </h4>
 
         <!-- 文章展示的信息 -->
         <div class="row my-3 align-items-center">
           <!-- 文章图片 -->
-          <div v-if="post.image" class="col-4">
-            <router-link :to="`/posts/${post.id}/`">
-              <img :src="post.image" :alt="post.title" class="rounded-lg w-100" />
+          <div v-if="post.image.url" class="col-3 text-center">
+            <router-link :to="`/posts/${post._id}/`">
+              <img :src="post.image.url" :alt="post.title" class="rounded-lg w-75" />
             </router-link>
           </div>
 
           <!-- 文章简单的内容 -->
-          <p :class="{ 'col-8': post.image }" class="text-muted">{{ post.content }}</p>
+          <p :class="{ 'col-9': post.image }" class="text-muted">{{ post.excerpt }}</p>
         </div>
 
         <!-- 文章发布时间 -->
@@ -30,15 +30,17 @@
 
 <script lang="ts">
 // 导入要用到的 vue 方法
-import { defineComponent, PropType, computed } from 'vue';
+import { defineComponent, PropType, computed } from 'vue'
 
 // 导入页面所需要的数据
-import { ImageProps } from '../../store';
-import { PostProps } from '../../data/testData';
+import { PostProps } from '../../store'
 
 // 导入辅助的方法
 // generateFitUrl 方法是将图片进行获取自定义大小
-import { generateFitUrl } from '../../data/helper';
+// import { generateFitUrl } from '../../data/helper'
+
+// 解决 require 报错的问题
+declare const require
 
 export default defineComponent({
   props: {
@@ -52,16 +54,20 @@ export default defineComponent({
     // 页面要渲染的文章列表的信息
     const posts = computed(() => {
       return props.list.map((post) => {
-        generateFitUrl(post.image as ImageProps, 20, 110, ['m_fill']);
-        return post;
-      });
-    });
+        if (!post.image) {
+          post.image.url = require('@/assets/images/column.jpg')
+        } else {
+          post.image.url = post.image.url + '?x-oss-process=image/resize,m_pad,h_50,w_50'
+        }
+        return post
+      })
+    })
 
     return {
       posts // 文章列表信息
-    };
+    }
   }
-});
+})
 </script>
 
 <style scoped>

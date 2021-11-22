@@ -27,24 +27,24 @@
 
 <script lang="ts">
 // 导入要用到的 vue 的方法
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref } from 'vue'
 
 // 导入 vuex 的获取 vuex 数据的 useStore 方法
-import { useStore } from 'vuex';
+import { useStore } from 'vuex'
 
 // 导入 vuex 中的两个数据
-import { GlobalDataProps, PostProps } from '../../store';
+import { GlobalDataProps, PostProps } from '../../store'
 
 // 导入 vue-router 的 useRouter 和 useRoute 方法
 // useRouter 获取路由器，用来进行路由的跳转
 // useRoute 是获取跳转的路由对象，上面有各种方法
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 // 导入组件
 // 导入 ValidateForm.vue 表单组件
-import ValidateForm from '../../components/ValidateComponents/ValidateForm.vue';
+import ValidateForm from '../../components/ValidateComponents/ValidateForm.vue'
 // 导入 ValidateInput.vue 输入框组件
-import ValidateInput, { RulesProp } from '../../components/ValidateComponents/ValidateInput.vue';
+import ValidateInput, { RulesProp } from '../../components/ValidateComponents/ValidateInput.vue'
 
 export default defineComponent({
   name: 'CreatePost',
@@ -54,44 +54,44 @@ export default defineComponent({
   },
   setup() {
     // 获取路由器，用来进行路由的跳转
-    const router = useRouter();
+    const router = useRouter()
 
     // 获取 vuex 的数据
-    const store = useStore<GlobalDataProps>();
+    const store = useStore<GlobalDataProps>()
 
     // 文章标题双向绑定的内容
-    const titleVal = ref('');
+    const titleVal = ref('')
     // 制定文章标题的输入规则
-    const titleRules: RulesProp = [{ type: 'required', message: '文章标题不能为空' }];
+    const titleRules: RulesProp = [{ type: 'required', message: '文章标题不能为空' }]
 
     // 文章内容双向绑定的内容
-    const contentVal = ref('');
+    const contentVal = ref('')
     // 制定文章内容的输入规则
-    const contentRules: RulesProp = [{ type: 'required', message: '文章标题不能为空' }];
+    const contentRules: RulesProp = [{ type: 'required', message: '文章标题不能为空' }]
 
     // 发表文章按钮的事件
     const onFormSubmit = (result: boolean) => {
       if (result) {
-        const { columnId } = store.state.user; // 获取用户信息中心的文章专栏 id 号
+        const { columnId } = store.state.user // 获取用户信息中心的文章专栏 id 号
 
         // 因为 columnId 可能不存在，直接创建新文章的话，columnId 可能为 undefined，会报错
         // 先判断 columnId 是否存在，再创建新的文章到数据中
         if (columnId) {
           const newPost: PostProps = {
-            id: new Date().getTime(), // 设置新创建的文章的 id
+            _id: new Date().getTime(), // 设置新创建的文章的 id
             title: titleVal.value, // 设置新创建的文章的标题
             content: contentVal.value, // 设置新创建的文章的内容
-            columnId,
-            createdAt: new Date().toLocaleString() // 设置新创建的文章的创建时间
-          };
+            createdAt: new Date().toLocaleString(), // 设置新创建的文章的创建时间
+            column: columnId + '' // 对应专栏的 id
+          }
 
           // 新的文章添加给 vuex 的方法，添加到数据当中
-          store.commit('createPost', newPost);
+          store.commit('createPost', newPost)
 
-          router.push({ name: 'column', params: { id: columnId } });
+          router.push({ name: 'column', params: { id: columnId } })
         }
       }
-    };
+    }
 
     return {
       titleVal, // 文章标题双向绑定的内容
@@ -99,9 +99,9 @@ export default defineComponent({
       contentVal, // 文章内容双向绑定的内容
       contentRules, // 文章内容的输入规则
       onFormSubmit // 发表文章事件
-    };
+    }
   }
-});
+})
 </script>
 
 <style lang="less" scoped>

@@ -1,7 +1,7 @@
 <template>
   <!-- 首页专栏区域 -->
   <div class="row">
-    <div v-for="column in columnList" :key="column.id" class="col-4 mb-4">
+    <div v-for="column in columnList" :key="column._id" class="col-4 mb-4">
       <div class="card h-100 shadow-sm">
         <div class="card-body text-center">
           <!-- 专栏图片 -->
@@ -20,7 +20,7 @@
           <!-- 写法一：to 使用对象的形式 -->
           <!-- <router-link :to="{ name: 'column_details', params: { id: column.id } }" class="btn btn-outline-primary">进入专栏</router-link> -->
           <!-- 写法二：to 使用模板字符串 -->
-          <router-link :to="`/column/${column.id}`" class="btn btn-outline-primary">进入专栏</router-link>
+          <router-link :to="`/column/${column._id}`" class="btn btn-outline-primary">进入专栏</router-link>
         </div>
       </div>
     </div>
@@ -32,13 +32,7 @@
 import { defineComponent, PropType, computed } from 'vue'
 
 // 定义专栏数据接口
-// import { ColumnProps } from '../../store'
-export interface ColumnProps {
-  id: number // 当前专栏的标识号
-  title: string // 当前专栏的标题
-  avatar?: string // 当前专栏的图片
-  description: string // 当前专栏的简介内容
-}
+import { ColumnProps } from '../../store'
 
 // 解决 require 报错的问题
 declare const require
@@ -54,16 +48,15 @@ export default defineComponent({
   setup(props) {
     // 页面加载的时候，将专栏列表页所需要的数据进行便利操作
     const columnList = computed(() => {
-      return props.list.map(column => {
+      return props.list.map((column) => {
         // 当专栏列表页没有图片的时候，默认使用本地的一张图片
         if (!column.avatar) {
           column.avatar.url = require('@/assets/images/column.jpg')
+        } else {
+          // 因为图片是从阿里云上获取的，可以控制图片的大小
+          // 这个表示将图片设为 50 * 50 的大小
+          column.avatar.url = column.avatar.url + '?x-oss-process=image/resize,m_pad,h_50,w_50'
         }
-        //  else {
-        //   // 因为图片是从阿里云上获取的，可以控制图片的大小
-        //   // 这个表示将图片设为 50 * 50 的大小
-        //   column.avatar.url = column.avatar.url + '?x-oss-process=image/resize,m_pad,h_50,w_50'
-        // }
         return column
       })
     })

@@ -11,13 +11,25 @@ const app = createApp(App) // 创建 vue 实例
 axios.defaults.baseURL = 'http://apis.imooc.com/api/'
 
 // 设置请求拦截器
-axios.interceptors.request.use(config => {
-  config.params = { ...config.params, icode: 'A5100D297F9752AE' }
+axios.interceptors.request.use((config) => {
+  // 请求时，判断请求是否完成，渲染 loading 组件
+  store.commit('setLoading', true)
+
+  // 判断请求是 get 请求还是 post 请求
+  if (config.method === 'get') {
+    config.params = { ...config.params, icode: 'A5100D297F9752AE' }
+  } else if (config.method === 'post') {
+    config.data = { ...config.data, icode: 'A5100D297F9752AE' }
+  }
+
   return config
 })
 
-axios.get('/columns', { params: { currentPage: 1, pageSize: 5 } }).then(res => {
-  console.log(res)
+// 设置响应拦截
+axios.interceptors.response.use((config) => {
+  // 请求时，判断请求是否完成，隐藏 loading 组件
+  store.commit('setLoading', false)
+  return config
 })
 
 app.use(router) // app 实例挂载 vue-router

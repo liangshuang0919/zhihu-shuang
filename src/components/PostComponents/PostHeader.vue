@@ -3,7 +3,7 @@
   <div class="column-info row mb-4 border-bottom pb-4 align-items-center" v-if="column">
     <!-- 专栏详情页的图片 -->
     <div class="col-3 text-center">
-      <img :src="column.avatar" :alt="column.title" class="rounded-circle border w-100" />
+      <img :src="column.avatar.url" :alt="column.title" class="rounded-circle border w-100" />
     </div>
 
     <!-- 专栏详情页的内容 -->
@@ -32,7 +32,7 @@ export default defineComponent({
       type: Object as PropType<ColumnProps>
     }
   },
-  setup(props) {
+  setup() {
     // 因为传过来的 column 为对象类型，需要使用 reactive 方法进行整合
     const column = reactive({})
     // 经过 reactive 方法进行整合之后，还要用 toRefs 方法对值进行一次拷贝

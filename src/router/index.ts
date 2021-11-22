@@ -53,12 +53,17 @@ const router = createRouter({
       meta: {
         requiredLogin: true // 只有登录了的用户才能创建帖子
       }
-    }]
+    }
+  ]
 })
 
 // 设置路由守卫
 // beforeEach 方法是全局前置守卫
 router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title + ''
+  }
+
   if (to.meta.requiredLogin && !store.state.user.isLogin) {
     // 如果当前页面不是 login 页面，并且用户没有登陆的话，就需要跳转到登录页面
     next({ name: 'login' })

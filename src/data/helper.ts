@@ -5,7 +5,7 @@ export function generateFitUrl(data: ImageProps, width: number, height: number, 
     const formatStr = format.reduce((prev, current) => {
       return current + ',' + prev
     }, '')
-    data.fitUrl = data.url + `?x-oss-process=image/resize,${formatStr}h_${height},w_${width}`
+    data.url = data.url + `?x-oss-process=image/resize,${formatStr}h_${height},w_${width}`
   }
 }
 
@@ -21,15 +21,15 @@ export function generateFitUrl(data: ImageProps, width: number, height: number, 
 // }
 
 interface CheckCondition {
-  format?: string[];
-  size?: number;
+  format?: string[]
+  size?: number
 }
 
 type ErrorType = 'size' | 'format' | null
 export function beforeUploadCheck(file: File, condition: CheckCondition) {
   const { format, size } = condition
   const isValidFormat = format ? format.includes(file.type) : true
-  const isValidSize = size ? (file.size / 1024 / 1024 < size) : true
+  const isValidSize = size ? file.size / 1024 / 1024 < size : true
   let error: ErrorType = null
   if (!isValidFormat) {
     error = 'format'
@@ -61,7 +61,7 @@ export const arrToObj = <T extends { _id?: string }>(arr: Array<T>) => {
 // const result = arrToObj(testData)
 
 export const objToArr = <T>(obj: { [key: string]: T }) => {
-  return Object.keys(obj).map(key => obj[key])
+  return Object.keys(obj).map((key) => obj[key])
 }
 
 // const testData2: { [key: string]: TestProps } = {
