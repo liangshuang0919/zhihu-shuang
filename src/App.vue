@@ -18,7 +18,10 @@
 
 <script lang="ts">
 // 导入 vue 中的方法
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, computed, onMounted } from 'vue'
+
+// 导入 axios 模块
+import axios from 'axios'
 
 // 导入 vuex 的获取 vuex 数据的 useStore 方法
 import { useStore } from 'vuex'
@@ -34,6 +37,9 @@ import GlobalHeader from './components/HeaderComponent/GlobalHeader.vue'
 // 导入页面 footer 区域
 import GlobalFooter from './components/FooterConponent/GlobalFooter.vue'
 
+// 导入 GlobalDataProps 全局数据泛型
+import { GlobalDataProps } from './store'
+
 export default defineComponent({
   name: 'App',
   components: {
@@ -43,20 +49,30 @@ export default defineComponent({
   },
   setup() {
     // 获取全局 vuex 数据
-    const store = useStore()
+    const store = useStore<GlobalDataProps>()
 
     // 获取 vuex 中的用户登录信息
     const currentUser = computed(() => store.state.user)
 
-    // 获取邮箱输入表单节点
-    const emailRef = ref('')
-
     // 获取全局 vuex 中数据请求时的等待状态 loading
     const isLoading = computed(() => store.state.loading)
 
+    // 获取 localstorage 中存储的 token
+    const token = computed(() => store.state.token)
+
+    // 当 App.vue 第一次加载的时候，判断 token 是否存在，并且用户还未登录的一个状态
+    onMounted(() => {
+      if (!currentUser.value.isLogin && token.value) {
+        // 当用户还未登陆，并且 token 存在的时候，设置 axios 的 Authorization 头
+        axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
+
+        // 然后调用获取用户信息的方法
+        store.dispatch('fetchCurrentUser')
+      }
+    })
+
     return {
       currentUser: currentUser, // GlobalHeader.vue 组件的数据
-      emailRef, // 邮箱输入框的节点
       isLoading // 数据请求时的等待状态 loading
     }
   }

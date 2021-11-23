@@ -13,9 +13,10 @@ import axios from 'axios'
 // 定义的全局用户的信息接口
 export interface UserProps {
   isLogin: boolean // 用户的登录状态
-  userName?: string // 用户名
-  userId?: string // 用户的 ID
-  columnId?: number // 要新建文章的专栏的 id
+  nickName?: string // 用户名
+  _id?: string // 用户的 ID
+  column?: number | string // 要新建文章的专栏的 id
+  email?: string // 用户的登录邮箱
 }
 
 // 图片的数据接口
@@ -82,7 +83,7 @@ const getAndCommit = async (url: string, mutationName: string, commit: Commit) =
 // 参数二：是要进行数据处理的 mutations 方法；类型是 string 类型
 // 参数三：是 commit 方法；类型是 Commit 类型，需要从 vuex 中导入
 // 参数四：是 post 请求需要传递的参数
-const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: any) => {
+const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: string) => {
   const { data } = await axios.post(url, payload)
   commit(mutationName, data)
   return data
@@ -91,13 +92,11 @@ const postAndCommit = async (url: string, mutationName: string, commit: Commit, 
 // 创建 vuex 状态管理的数据，规定的是自定义的全局数据的一个接口类型
 const store = createStore<GlobalDataProps>({
   state: {
-    token: '', // 用户登录时的 token 令牌
+    token: localStorage.getItem('token') || '', // 用户登录时的 token 令牌，没有的时候设为空
     columns: [], // 首页专栏列表数据
     posts: [], // 专栏详情页列表数据
     user: {
-      isLogin: false, // 用户登录状态信息
-      userName: '',
-      columnId: 1
+      isLogin: false // 用户登录状态信息
     },
     loading: true // 全局的一个数据请求的时候，一个等待的状态
   },
@@ -128,9 +127,24 @@ const store = createStore<GlobalDataProps>({
     setLoading(state, status) {
       state.loading = status
     },
+    // 用来处理请求到的用户信息
+    fetchCurrentUser(state, rawData) {
+      state.user = { isLogin: true, ...rawData.data }
+    },
     // 用户登录时，进行的数据处理
     login(state, rawData) {
-      state.token = rawData.data.token
+      const { token } = rawData.data // 获取用户登录时的 token
+      state.token = token // 将 token 存放在 vuex 中
+
+      // 将 token持久化，用户登录的时候，将 token 存于 localstorage 中
+      localStorage.setItem('token', token)
+
+      // 下面是给 axios 每次请求的时候，都要将设置其 header 的头部信息
+      // 在 axios 的 git 文档上的要求写法如下，但是在 ts 中不允许使用 [] 的方式存储键值
+      // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      // 1. 使用 '.' 的方式存储键值即可
+      // 2. 'Bearer + token' 是一个常用的固定写法
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
     }
   },
   actions: {
@@ -176,10 +190,25 @@ const store = createStore<GlobalDataProps>({
       //   commit('fetchPosts', res.data)
       // })
     },
+    // 发送请求的时候，获取用户获取到的信息
+    // 因为上面的 axios 更改了头信息，这里就可以获取到被 token 保护到的用户信息了
+    fetchCurrentUser({ commit }) {
+      getAndCommit('/user/current', 'fetchCurrentUser', commit)
+    },
     // 用户登录请求
     login({ commit }, payload) {
       // 使用封装的 post 请求函数，进行异步请求数据
       return postAndCommit('/user/login', 'login', commit, payload)
+    },
+    // 为了前端减少actions 的回调，这里使用到 vuex 提供的一个组和 actions 的方法
+    // 这里组合的是 login action 和 fetchAndUser action 两个 action。
+    // 因为代码的逻辑就是在用户登录成功之后，就获取到用户的信息
+    // 参数一：dispatch 方法，调用 actions 方法
+    // 参数二：loginData 用户登录信息，用户登录的手机号 + 用户登录密码
+    loginAndFetch({ dispatch }, loginData) {
+      return dispatch('login', loginData).then(() => {
+        return dispatch('fetchCurrentUser')
+      })
     }
   },
   getters: {

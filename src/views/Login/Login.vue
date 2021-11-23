@@ -83,7 +83,7 @@ export default defineComponent({
           password: passwordValue.value // 用户邮箱密码
         }
         // 调用 store 的 login 异步请求方法，获取 token
-        store.dispatch('login', payload).then((data) => {
+        store.dispatch('loginAndFetch', payload).then((data) => {
           console.log(data)
           // 用户登录成功的时候，跳转到首页去
           router.push('/')
