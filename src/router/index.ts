@@ -10,6 +10,7 @@ const routerHistory = createWebHashHistory()
 // 创建 vue-router 要加载的组件
 const Home = () => import('@/views/Home/Home.vue') // 首页页面
 const Login = () => import('@/views/Login/Login.vue') // 登录页页面
+const Register = () => import('@/views/Register/Register.vue') // 登录页页面
 const ColumnDetails = () => import('@/views/ColumnDetails/ColumnDetails.vue') // 专栏详情页页面
 const CreatePost = () => import('@/views/CreatePost/CreatePost.vue') // 编辑文章页面
 
@@ -34,6 +35,15 @@ const router = createRouter({
       meta: {
         redirectAlreadyLogin: true, // 用户已经登录
         title: 'Shuang-Login'
+      }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register,
+      // 元信息
+      meta: {
+        title: 'Shuang-Register'
       }
     },
     {

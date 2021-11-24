@@ -15,7 +15,7 @@
           <router-link to="/login" class="btn btn-primary my-2">登录</router-link>
         </li>
         <li class="list-inline-item">
-          <router-link to="/login" class="btn btn-outline-light my-2">注册</router-link>
+          <router-link to="/register" class="btn btn-outline-light my-2">注册</router-link>
         </li>
       </ul>
       <!-- 右侧登录后，个人下拉菜单 -->

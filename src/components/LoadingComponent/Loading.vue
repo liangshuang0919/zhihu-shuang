@@ -15,7 +15,10 @@
 
 <script lang="ts">
 // 导入 vue 中的方法
-import { defineComponent, onUnmounted } from 'vue'
+import { defineComponent } from 'vue'
+
+// 导入创建节点的方法，这个是为了给 teleport 标签创建一个对应的 id 与 to 属性一致的 div 节点
+import useDOMCreate from '../../hooks/useDOMCreate'
 
 export default defineComponent({
   name: 'Loading',
@@ -28,16 +31,8 @@ export default defineComponent({
     }
   },
   setup() {
-    // 组件加载的时候创建一个节点，为了将该组件放在这个节点中，使其与 #app 节点平行
-    // 这个是为了解决使用 teleport 节点的时候，还要给 index.html 添加一个 div 节点
-    const node = document.createElement('div')
-    node.id = 'back'
-    document.body.appendChild(node)
-
-    // 组件销毁的时候，将创建的节点移除
-    onUnmounted(() => {
-      document.body.removeChild(node)
-    })
+    // 创建与 teleport 标签对应的 div 节点
+    useDOMCreate('message')
   }
 })
 </script>

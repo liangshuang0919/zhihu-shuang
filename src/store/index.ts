@@ -45,13 +45,20 @@ export interface PostProps {
   createdAt: string // 文章的时间
 }
 
+// 全局的错误状态接口
+export interface GlobalErrorProps {
+  status: boolean // 错误状态
+  message?: string // 错误信息
+}
+
 // 定义存储所有全局信息的接口
 export interface GlobalDataProps {
+  user: UserProps // 用户信息
   token: string // 用户登录时，获取到的 token 令牌
   columns: ColumnProps[] // 首页专栏列表数据展示的数据
   posts: PostProps[] // 专栏详情页文章展示列表的数据类型
-  user: UserProps // 用户信息
   loading: boolean // 全局的一个数据请求的时候，一个等待的状态
+  error: GlobalErrorProps // 错误信息
 }
 
 // export interface ResponseType<P = {}> {
@@ -62,11 +69,6 @@ export interface GlobalDataProps {
 
 // interface ListProps<P> {
 //   [id: string]: P;
-// }
-
-// export interface GlobalErrorProps {
-//   status: boolean;
-//   message?: string;
 // }
 
 // 封装 get 请求，使用 async + await 进行异步处理请求的函数
@@ -92,13 +94,16 @@ const postAndCommit = async (url: string, mutationName: string, commit: Commit, 
 // 创建 vuex 状态管理的数据，规定的是自定义的全局数据的一个接口类型
 const store = createStore<GlobalDataProps>({
   state: {
-    token: localStorage.getItem('token') || '', // 用户登录时的 token 令牌，没有的时候设为空
-    columns: [], // 首页专栏列表数据
-    posts: [], // 专栏详情页列表数据
     user: {
       isLogin: false // 用户登录状态信息
     },
-    loading: true // 全局的一个数据请求的时候，一个等待的状态
+    token: localStorage.getItem('token') || '', // 用户登录时的 token 令牌，没有的时候设为空
+    columns: [], // 首页专栏列表数据
+    posts: [], // 专栏详情页列表数据
+    loading: true, // 全局的一个数据请求的时候，一个等待的状态
+    error: {
+      status: false // 错误状态
+    }
   },
   // mutations 中有一些 rawData，表示的是通过 actions 异步请求获取到的原始数据
   mutations: {
@@ -126,6 +131,10 @@ const store = createStore<GlobalDataProps>({
     // 页面请求数据的时候，对等待状态 loading 进行修改
     setLoading(state, status) {
       state.loading = status
+    },
+    // 设置全局错误信息的方法
+    setError(state, err: GlobalErrorProps) {
+      state.error = err
     },
     // 用来处理请求到的用户信息
     fetchCurrentUser(state, rawData) {
