@@ -8,11 +8,13 @@
           <img src="../../assets/images/callout.svg" alt="callout" class="w-50" />
           <h2 class="font-weight-light">随心写作，自由表达</h2>
           <p>
-            <a href="javascript:;" class="btn btn-primary my-2">开始写文章</a>
+            <router-link to="/createcolumn" class="btn btn-primary my-2">开始写文章</router-link>
           </p>
         </div>
       </div>
     </section>
+
+    <uploader action="/upload"></uploader>
 
     <!-- 首页专栏的标题 -->
     <h4 class="font-weight-bold text-center">发现精彩</h4>
@@ -38,11 +40,13 @@ import { GlobalDataProps } from '../../store'
 
 // 导入首页专栏部分组件和定义的 ColumnProps 数据类型
 import ColumnList from '../../components/ColumnComponents/ColumnList.vue'
+import Uploader from '../CreateColumn/components/Uploader.vue'
 
 export default defineComponent({
   name: 'Home',
   components: {
-    ColumnList // 注册首页专栏部分组件
+    ColumnList, // 注册首页专栏部分组件
+    Uploader
   },
   setup() {
     // 获取全局 vuex 数据

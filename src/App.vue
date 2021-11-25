@@ -3,8 +3,6 @@
   <!-- 全局的头部 header 区域 -->
   <global-header :user="currentUser" />
 
-  <!-- <message v-if="error.status" type="error" :message="error.message"></message> -->
-
   <!-- 页面内容区域 -->
   <div class="container">
     <!-- loading 页面 -->

@@ -13,6 +13,7 @@ const Login = () => import('@/views/Login/Login.vue') // 登录页页面
 const Register = () => import('@/views/Register/Register.vue') // 登录页页面
 const ColumnDetails = () => import('@/views/ColumnDetails/ColumnDetails.vue') // 专栏详情页页面
 const CreatePost = () => import('@/views/CreatePost/CreatePost.vue') // 编辑文章页面
+const CreateColumn = () => import('@/views/CreateColumn/CreateColumn.vue') // 上传文章页面
 
 // 创建 vue-router 实例
 const router = createRouter({
@@ -24,7 +25,7 @@ const router = createRouter({
       component: Home,
       // 元信息
       meta: {
-        title: 'Shuang-Home'
+        title: 'Shuang-首页'
       }
     },
     {
@@ -34,7 +35,7 @@ const router = createRouter({
       // 元信息
       meta: {
         redirectAlreadyLogin: true, // 用户已经登录
-        title: 'Shuang-Login'
+        title: 'Shuang-登录'
       }
     },
     {
@@ -43,7 +44,7 @@ const router = createRouter({
       component: Register,
       // 元信息
       meta: {
-        title: 'Shuang-Register'
+        title: 'Shuang-注册'
       }
     },
     {
@@ -52,16 +53,27 @@ const router = createRouter({
       component: ColumnDetails,
       // 元信息
       meta: {
-        title: 'Shuang-ColumnDetails'
+        title: 'Shuang-专栏详情'
       }
     },
     {
-      path: '/create',
-      name: 'create',
+      path: '/createpost',
+      name: 'createpost',
       component: CreatePost,
       // 元信息
       meta: {
+        title: 'Shuang-文章编辑',
         requiredLogin: true // 只有登录了的用户才能创建帖子
+      }
+    },
+    {
+      path: '/createcolumn',
+      name: 'createcolumn',
+      component: CreateColumn,
+      // 元信息
+      meta: {
+        title: 'Shuang-上传文章'
+        // requiredLogin: true
       }
     }
   ]

@@ -36,13 +36,13 @@ export interface ColumnProps {
 
 // 定义的专栏详情页的数据接口
 export interface PostProps {
-  _id: number | string // 文章的标识符
+  _id?: number | string // 文章的标识符
   title: string // 文章的标题
   excerpt?: string // 文章的摘要
   content?: string // 文章的内容
   image?: ImageProps // 文章的图片
-  column: string // 将专栏详情页的数据与首页的专栏区域的内容，一一对应起来
-  createdAt: string // 文章的时间
+  column?: string | number // 将专栏详情页的数据与首页的专栏区域的内容，一一对应起来
+  createdAt?: string // 文章的时间
 }
 
 // 全局的错误状态接口

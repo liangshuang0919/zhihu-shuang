@@ -19,10 +19,15 @@ axios.interceptors.request.use((config) => {
   // 当第一次登陆失败的时候，会弹出提示框，再次点击登录的时候，因为 error 的 status 一直为 true。所以在每一次点击登陆的时候，在请求拦截这里将 error 的 status 置为  false
   store.commit('setError', { status: false, message: '' })
 
-  // 判断请求是 get 请求还是 post 请求
-  if (config.method === 'get') {
-    config.params = { ...config.params, icode: 'A5100D297F9752AE' }
-  } else if (config.method === 'post') {
+  // get 请求和 post 请求不一样的请求，将参数存储在不同的地方
+  // get 请求，添加到 url 中
+  config.params = { ...config.params, icode: 'A5100D297F9752AE' }
+  // 其他请求，添加到 body 中
+  // 如果是上传文件，添加到 FormData 中
+  if (config.data instanceof FormData) {
+    config.data.append('icode', 'A5100D297F9752AE')
+  } else {
+    // 普通的 body 对象，添加到 data 中
     config.data = { ...config.data, icode: 'A5100D297F9752AE' }
   }
 

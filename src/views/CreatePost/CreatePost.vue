@@ -72,23 +72,23 @@ export default defineComponent({
     // 发表文章按钮的事件
     const onFormSubmit = (result: boolean) => {
       if (result) {
-        const { columnId } = store.state.user // 获取用户信息中心的文章专栏 id 号
+        const { column } = store.state.user // 获取用户信息中心的文章专栏 id 号
 
         // 因为 columnId 可能不存在，直接创建新文章的话，columnId 可能为 undefined，会报错
         // 先判断 columnId 是否存在，再创建新的文章到数据中
-        if (columnId) {
+        if (column) {
           const newPost: PostProps = {
             _id: new Date().getTime(), // 设置新创建的文章的 id
             title: titleVal.value, // 设置新创建的文章的标题
             content: contentVal.value, // 设置新创建的文章的内容
             createdAt: new Date().toLocaleString(), // 设置新创建的文章的创建时间
-            column: columnId + '' // 对应专栏的 id
+            column: column // 对应专栏的 id
           }
 
           // 新的文章添加给 vuex 的方法，添加到数据当中
           store.commit('createPost', newPost)
 
-          router.push({ name: 'column', params: { id: columnId } })
+          router.push({ name: 'column', params: { id: column } })
         }
       }
     }
