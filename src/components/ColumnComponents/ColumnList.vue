@@ -8,7 +8,8 @@
           <!-- 这个是测试数据所用的 -->
           <!-- <img :src="column.avatar" :alt="column.title" class="rounded-circle border border-weight w-25 my-3" /> -->
           <!-- 这个是真实的后端数据 -->
-          <img :src="column.avatar.url" :alt="column.title" class="rounded-circle border border-weight my-3" />
+          <img :src="column.avatar.url" :alt="column.title"
+            class="rounded-circle border border-weight my-3" />
 
           <!-- 专栏名称 -->
           <h5 class="card-title">{{ column.title }}</h5>
@@ -20,7 +21,8 @@
           <!-- 写法一：to 使用对象的形式 -->
           <!-- <router-link :to="{ name: 'column_details', params: { id: column.id } }" class="btn btn-outline-primary">进入专栏</router-link> -->
           <!-- 写法二：to 使用模板字符串 -->
-          <router-link :to="`/column/${column._id}`" class="btn btn-outline-primary">进入专栏</router-link>
+          <router-link :to="`/column/${column._id}`" class="btn btn-outline-primary">进入专栏
+          </router-link>
         </div>
       </div>
     </div>
@@ -31,8 +33,12 @@
 // 导入 vue 中的方法
 import { defineComponent, PropType, computed } from 'vue'
 
-// 定义专栏数据接口
+// 导入 vuex 中的数据类型接口, ImageProps
 import { ColumnProps } from '../../store'
+
+// 导入辅助的方法
+// generateFitUrl 方法是将图片进行获取自定义大小
+// import { generateFitUrl } from '../../data/helper'
 
 // 解决 require 报错的问题
 declare const require
@@ -57,6 +63,9 @@ export default defineComponent({
           // 这个表示将图片设为 50 * 50 的大小
           column.avatar.url = column.avatar.url + '?x-oss-process=image/resize,m_pad,h_50,w_50'
         }
+
+        // 使用封装的 generateFitUrl 用来获取阿里云服务器上图片自定义的大小
+        // generateFitUrl(column.image as ImageProps, 200, 110, ['m_fill'])
         return column
       })
     })

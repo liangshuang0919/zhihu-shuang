@@ -4,6 +4,9 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 // 导入 vuex 中的数据，这里为了获取一个用户登录的状态
 import store from '../store'
 
+// 导入 axios 模块
+import axios from 'axios'
+
 // 创建 history 模式实例
 const routerHistory = createWebHashHistory()
 
@@ -23,7 +26,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
-      // 元信息
       meta: {
         title: 'Shuang-首页'
       }
@@ -32,7 +34,6 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
-      // 元信息
       meta: {
         redirectAlreadyLogin: true, // 用户已经登录
         title: 'Shuang-登录'
@@ -42,7 +43,6 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: Register,
-      // 元信息
       meta: {
         title: 'Shuang-注册'
       }
@@ -51,7 +51,6 @@ const router = createRouter({
       path: '/column/:id',
       name: 'column',
       component: ColumnDetails,
-      // 元信息
       meta: {
         title: 'Shuang-专栏详情'
       }
@@ -60,7 +59,6 @@ const router = createRouter({
       path: '/createpost',
       name: 'createpost',
       component: CreatePost,
-      // 元信息
       meta: {
         title: 'Shuang-文章编辑',
         requiredLogin: true // 只有登录了的用户才能创建帖子
@@ -70,10 +68,8 @@ const router = createRouter({
       path: '/createcolumn',
       name: 'createcolumn',
       component: CreateColumn,
-      // 元信息
       meta: {
         title: 'Shuang-上传文章'
-        // requiredLogin: true
       }
     }
   ]
@@ -82,18 +78,51 @@ const router = createRouter({
 // 设置路由守卫
 // beforeEach 方法是全局前置守卫
 router.beforeEach((to, from, next) => {
-  if (to.meta.title) {
-    document.title = to.meta.title + ''
-  }
+  const { user, token } = store.state
+  const { requiredLogin, redirectAlreadyLogin } = to.meta
 
-  if (to.meta.requiredLogin && !store.state.user.isLogin) {
-    // 如果当前页面不是 login 页面，并且用户没有登陆的话，就需要跳转到登录页面
-    next({ name: 'login' })
-  } else if (to.meta.redirectAlreadyLogin && store.state.user.isLogin) {
-    // 当用户已经登录了，跳到首页页面
-    next('/')
+  // 1、判断用户是否登录
+  if (!user.isLogin) {
+    if (token) {
+      // 3、已经存在 token 的时候，那么给 axios 设置统一的请求头，加上 token
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
+      // 发送获取用户信息的请求
+      store
+        .dispatch('fetchCurrentUser')
+        .then(() => {
+          if (redirectAlreadyLogin) {
+            // 发送请求成功的话，那么当前页面设置了路由权限的话，跳转到首页
+            next('/')
+          } else {
+            // 发送请求成功的话，那么当前页面没有设置路由权限的话，继续执行
+            next()
+          }
+        })
+        .catch((err) => {
+          // 如果发送请求失败的话，说明 token 已经失效的，那么执行退出事件，然后跳转到登录页重新登陆
+          console.error(err)
+          store.commit('logout')
+          next('login')
+        })
+    } else {
+      // 4、用户没有 token 的话，那么判断要访问的页面是否设置了路由权限
+      if (requiredLogin) {
+        // 4.1 要访问的页面设置了路由权限，那么跳转到登录页面
+        next('login')
+      } else {
+        // 4.2 要访问的页面没有设置路由权限，那么继续执行
+        next()
+      }
+    }
   } else {
-    next()
+    // 2、用户已经登陆判断是否设置了路由权限
+    if (redirectAlreadyLogin) {
+      // 2.1 如果设置了路由权限，那么则跳转到首页
+      next('/')
+    } else {
+      // 2.2 如果没有设置路由权限，那么继续执行
+      next()
+    }
   }
 })
 

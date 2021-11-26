@@ -26,7 +26,9 @@
               <router-link to="/createpost" class="dropdown-item">新建文章</router-link>
             </drop-down-item>
             <drop-down-item><a href="javascript:;" class="dropdown-item">编辑资料</a></drop-down-item>
-            <drop-down-item><a href="javascript:;" class="dropdown-item" @click="hello">退出登录</a></drop-down-item>
+            <drop-down-item>
+              <a href="javascript:;" class="dropdown-item" @click="logout">退出登录</a>
+            </drop-down-item>
           </drop-down>
         </li>
       </ul>
@@ -46,6 +48,9 @@ import { GlobalDataProps, UserProps } from '../../store'
 
 // 导入 vue-router 相关的方法
 import { useRouter } from 'vue-router'
+
+// 导入要用的的提示框的组件（这是我封装的一个实例方法）
+import createMessage from '../../hooks/useMessage'
 
 // 导入 DropDown.vue 组件
 import DropDown from '../DropDownComponents/DropDown.vue'
@@ -71,20 +76,23 @@ export default defineComponent({
     // 初始化 router 路由
     const router = useRouter()
 
-    const hello = () => {
+    const logout = () => {
       // 清空用户信息
       store.state.user = {
         isLogin: false
       }
 
       // 清空 token
-      localStorage.setItem('token', '')
+      store.commit('logout')
 
-      // 提交成功后跳转路由
-      router.push('/login')
+      createMessage('退出成功，2s 后将跳转到登录页面~', 'success')
+
+      setTimeout(() => {
+        router.push('/login')
+      }, 2000)
     }
 
-    return { hello }
+    return { logout }
   }
 })
 </script>

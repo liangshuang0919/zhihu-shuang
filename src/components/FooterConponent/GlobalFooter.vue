@@ -1,6 +1,6 @@
 <template>
   <!-- 全局的底部 footer 区域 -->
-  <footer class="text-center py-4 text-secondary bg-light mt-6 navbar-fixed-bottom">
+  <footer class="text-center py-4 text-secondary bg-light mt-6 navbar-fixed-bottom footer-content">
     <small>
       <ul class="list-inline mb-0">
         <li class="list-inline-item">© 2021 凉爽爽爽爽爽爽爽爽爽</li>
@@ -22,4 +22,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+.footer-content {
+  margin-top: 2rem;
+}
+</style>

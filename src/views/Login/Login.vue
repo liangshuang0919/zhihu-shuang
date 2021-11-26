@@ -2,19 +2,19 @@
   <div class="login-page mx-auto p-3 w-330">
     <h5 class="my-4 text-center">先登录，才能进入凉爽爽爽爽爽爽爽爽爽的专栏</h5>
     <!-- 表单区域 -->
-    <validate-form @form-submit="onFormSubmit" class="input-area">
+    <validate-form @form-submit="onFormSubmit" @keyup.enter="onFormSubmit" class="input-area">
       <!-- 输入邮箱区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3 w-50 input-area">
         <label for="exampleInputEmail" class="form-label">邮箱地址</label>
-        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules" v-model="formData.email"
-          ref="emailRef"></validate-input>
+        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules"
+          v-model="formData.email" ref="emailRef"></validate-input>
       </div>
 
       <!-- 输入密码区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3 w-50 input-area">
         <label for="exampleInputPassword" class="form-label">邮箱密码</label>
-        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码" :rules="passwordRules"
-          v-model="formData.password"></validate-input>
+        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码"
+          :rules="passwordRules" v-model="formData.password"></validate-input>
       </div>
 
       <!-- 提交按钮区域（对应 ValidateForm.vue 组件 name 为 submit 的插槽） -->
@@ -56,8 +56,8 @@ export default defineComponent({
 
     // 表单输入框中的内容
     const formData = reactive({
-      email: '',
-      password: ''
+      email: '1551724864@qq.com',
+      password: '123456'
     })
 
     // 初始化 router，用来定义路由的一系列行为

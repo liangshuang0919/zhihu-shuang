@@ -32,7 +32,7 @@
 // 导入要用到的 vue 方法
 import { defineComponent, PropType, computed } from 'vue'
 
-// 导入页面所需要的数据
+// 导入 vuex 中的数据类型接口, ImageProps
 import { PostProps } from '../../store'
 
 // 导入辅助的方法
@@ -59,6 +59,8 @@ export default defineComponent({
         } else {
           post.image.url = post.image.url + '?x-oss-process=image/resize,m_pad,h_50,w_50'
         }
+        // 使用封装的 generateFitUrl 用来获取阿里云服务器上图片自定义的大小
+        // generateFitUrl(post.image as ImageProps, 200, 110, ['m_fill'])
         return post
       })
     })

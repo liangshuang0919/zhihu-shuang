@@ -12,9 +12,9 @@ import axios from 'axios'
 
 // 定义的全局用户的信息接口
 export interface UserProps {
+  _id?: string // 用户的 ID
   isLogin: boolean // 用户的登录状态
   nickName?: string // 用户名
-  _id?: string // 用户的 ID
   column?: number | string // 要新建文章的专栏的 id
   email?: string // 用户的登录邮箱
 }
@@ -24,6 +24,7 @@ export interface ImageProps {
   _id?: string
   url?: string
   createdAt?: string
+  fitUrl?: string
 }
 
 // 定义的首页专栏列表的数据接口
@@ -40,15 +41,30 @@ export interface PostProps {
   title: string // 文章的标题
   excerpt?: string // 文章的摘要
   content?: string // 文章的内容
-  image?: ImageProps // 文章的图片
+  image?: ImageProps | string // 文章的图片
   column?: string | number // 将专栏详情页的数据与首页的专栏区域的内容，一一对应起来
   createdAt?: string // 文章的时间
+  author?: string // 创建文章的用户 id
 }
 
 // 全局的错误状态接口
 export interface GlobalErrorProps {
   status: boolean // 错误状态
   message?: string // 错误信息
+}
+
+// 定义上传文件的一个返回的数据类型接口
+export interface FileProps<P = {}> {
+  code: number
+  message: string // 服务器传递过来的信息
+  data: P // 定义一个泛型
+}
+
+// 定义响应类型的接口
+export interface ResponseType<P = {}> {
+  code: number
+  msg: string
+  data: P
 }
 
 // 定义存储所有全局信息的接口
@@ -61,16 +77,6 @@ export interface GlobalDataProps {
   error: GlobalErrorProps // 错误信息
 }
 
-// export interface ResponseType<P = {}> {
-//   code: number;
-//   msg: string;
-//   data: P;
-// }
-
-// interface ListProps<P> {
-//   [id: string]: P;
-// }
-
 // 封装 get 请求，使用 async + await 进行异步处理请求的函数
 // 参数一：是进行请求的 url 地址；类型是 string 类型
 // 参数二：是要进行数据处理的 mutations 方法；类型是 string 类型
@@ -78,6 +84,7 @@ export interface GlobalDataProps {
 const getAndCommit = async (url: string, mutationName: string, commit: Commit) => {
   const { data } = await axios.get(url)
   commit(mutationName, data)
+  return data
 }
 
 // 封装 post 请求使用 async + await 进行异步处理请求的函数
@@ -154,13 +161,22 @@ const store = createStore<GlobalDataProps>({
       // 1. 使用 '.' 的方式存储键值即可
       // 2. 'Bearer + token' 是一个常用的固定写法
       axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    },
+    // 用户退出事件
+    logout(state) {
+      // 用户推出时将 vuex 中的 token 清空
+      state.token = ''
+      // 将本地的 localstorage 中的 toktn 删除
+      localStorage.removeItem('token')
+      // 将 axios 的头部携带的统一 token 删除掉
+      delete axios.defaults.headers.common.Authorization
     }
   },
   actions: {
     // 获取首页专栏列表的后端数据
     fetchColumns({ commit }) {
       // 使用封装的 get 请求函数，进行异步请求数据
-      getAndCommit('/columns', 'fetchColumns', commit)
+      return getAndCommit('/columns', 'fetchColumns', commit)
 
       // 使用 async + await 异步处理请求
       // const { data } = await axios.get('/columns')
@@ -174,7 +190,7 @@ const store = createStore<GlobalDataProps>({
     // 获取首页专栏列表的某一个专栏的具体的后端数据
     fetchColumn({ commit }, columnId) {
       // 使用封装的 get 请求函数，进行异步请求数据
-      getAndCommit(`/columns/${columnId}`, 'fetchColumn', commit)
+      return getAndCommit(`/columns/${columnId}`, 'fetchColumn', commit)
 
       // 使用 async + await 异步处理请求
       // const { data } = await axios.get(`/columns/${columnId}`)
@@ -188,7 +204,7 @@ const store = createStore<GlobalDataProps>({
     // 获取首专栏详情页的后端数据
     fetchPosts({ commit }, columnId) {
       // 使用封装的 get 请求函数，进行异步请求数据
-      getAndCommit(`/columns/${columnId}/posts`, 'fetchPosts', commit)
+      return getAndCommit(`/columns/${columnId}/posts`, 'fetchPosts', commit)
 
       // 使用 async + await 异步处理请求
       // const { data } = await axios.get(`/columns/${columnId}/posts`)
@@ -202,12 +218,17 @@ const store = createStore<GlobalDataProps>({
     // 发送请求的时候，获取用户获取到的信息
     // 因为上面的 axios 更改了头信息，这里就可以获取到被 token 保护到的用户信息了
     fetchCurrentUser({ commit }) {
-      getAndCommit('/user/current', 'fetchCurrentUser', commit)
+      return getAndCommit('/user/current', 'fetchCurrentUser', commit)
     },
     // 用户登录请求
     login({ commit }, payload) {
       // 使用封装的 post 请求函数，进行异步请求数据
       return postAndCommit('/user/login', 'login', commit, payload)
+    },
+    // 创建文章请求
+    createPost({ commit }, payload) {
+      // 使用封装的 post 请求函数，进行异步请求数据
+      return postAndCommit('/posts', 'createPost', commit, payload)
     },
     // 为了前端减少actions 的回调，这里使用到 vuex 提供的一个组和 actions 的方法
     // 这里组合的是 login action 和 fetchAndUser action 两个 action。
