@@ -4,7 +4,7 @@
     <h4>新建文章</h4>
     <!-- 上传图片组件 -->
     <!-- bootstrap 的水平居中 align-items-center justify-content-center -->
-    <uploader action="/upload" :beforeUpload="uploadCheck" @file-uploaded="handelFileUploaded"
+    <uploader action="/upload" :beforeUpload="uploadCheck" @file-upload-success="handelFileUploaded"
       class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4">
       <h2>点击上传头图</h2>
 
@@ -107,6 +107,14 @@ export default defineComponent({
     // 记录要上传图片的 id
     let imageId = ''
 
+    // 获取当前上传图的 id
+    const handelFileUploaded = (rawData: ResponseType<ImageProps>) => {
+      // 获取当前上传图片的 id
+      if (rawData.data._id) {
+        imageId = rawData.data._id
+      }
+    }
+
     // 发表文章按钮的事件
     const onFormSubmit = (result: boolean) => {
       if (result) {
@@ -118,10 +126,8 @@ export default defineComponent({
         // 先判断 columnId 是否存在，再创建新的文章到数据中
         if (column) {
           const newPost: PostProps = {
-            // _id: new Date().getTime(), // 设置新创建的文章的 id
             title: formData.titleVal, // 设置新创建的文章的标题
             content: formData.contentVal, // 设置新创建的文章的内容
-            createdAt: new Date().toLocaleString(), // 设置新创建的文章的创建时间
             column: column, // 对应专栏的 id
             author: _id // 创建文章的用户的 id
           }
@@ -138,7 +144,12 @@ export default defineComponent({
 
             // 跳转路由
             setTimeout(() => {
-              router.push({ name: 'column', params: { id: column } })
+              router.push({
+                name: 'column',
+                params: {
+                  id: column
+                }
+              })
             })
           })
         }
@@ -169,14 +180,6 @@ export default defineComponent({
       }
 
       return passed
-    }
-
-    // 获取当前上传图的 id
-    const handelFileUploaded = (rawData: ResponseType<ImageProps>) => {
-      // 获取当前上传图片的 id
-      if (rawData.data._id) {
-        imageId = rawData.data._id
-      }
     }
 
     return {

@@ -55,7 +55,6 @@ export default defineComponent({
     const list = computed(() => store.getters.getPostsById(currentId))
 
     return {
-      // route // 路由对象（测试用的）
       column, // 首页专栏区域的数据
       list // 专栏详情页的数据
     }

@@ -21,7 +21,7 @@
 import { defineComponent, PropType, reactive, toRefs } from 'vue'
 
 // 导入页面所需要的数据
-import { ColumnProps } from '../../data/testData'
+import { ColumnProps } from '../../store'
 
 export default defineComponent({
   name: 'PostHeader',

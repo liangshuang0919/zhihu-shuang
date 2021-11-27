@@ -17,8 +17,8 @@
   <!-- 全局页面的一个提示信息框 -->
   <teleport to='#message'>
     <!-- 成功的提示框 -->
-    <div class="message-box alert d-flex align-items-center alert-dismissible fixed-top w-50 mx-auto" :class="classObject"
-      v-if="isVisible">
+    <div class="message-box alert d-flex align-items-center alert-dismissible fixed-top w-50 mx-auto"
+      :class="classObject" v-if="isVisible">
       <!-- 提示框前面的图标 -->
       <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img">
         <use :xlink:href="messageIcon" />
@@ -70,7 +70,8 @@ export default defineComponent({
     }
 
     // 提示框前面的小图标
-    const messageIcon = props.type === 'success' ? '#check-circle-fill' : props.type === 'error' ? '#exclamation-triangle-fill' : '#info-fill'
+    const messageIcon =
+      props.type === 'success' ? '#check-circle-fill' : props.type === 'error' ? '#exclamation-triangle-fill' : '#info-fill'
 
     // 关闭提示框的事件
     const closeMessage = () => {

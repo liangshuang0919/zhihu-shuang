@@ -14,7 +14,8 @@ export const testColumn: ColumnProps[] = [
   {
     id: 1,
     title: 'test1的专栏',
-    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧, 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧',
+    description:
+      '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧, 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧',
     avatar: 'https://pic2.zhimg.com/80/v2-a8e92316cbf9f5707b4f490a33fee37d_720w.jpg'
   },
   {
@@ -26,7 +27,8 @@ export const testColumn: ColumnProps[] = [
   {
     id: 3,
     title: 'test3的专栏',
-    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧',
+    description:
+      '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧 这是的test1专栏，有一段非常有意思的简介，可以更新一下欧',
     avatar: 'https://pic3.zhimg.com/80/v2-9a6137be78b1d1fe67025d93db5ac8a2_720w.jpg'
   },
   {
@@ -40,9 +42,10 @@ export const testColumn: ColumnProps[] = [
 // 测试数据
 export const testPosts: PostProps[] = [
   {
-    _id: 1,
+    _id: '1',
     title: '这是我的第一篇文章',
-    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+    content:
+      '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
     image: {
       url: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee1980819f4ae08ac78d458.png?x-oss-process=image/resize,m_fill,m_pad,w_200,h_110'
     },
@@ -50,16 +53,18 @@ export const testPosts: PostProps[] = [
     column: '1'
   },
   {
-    _id: 2,
+    _id: '2',
     title: '这是我的第二篇文章',
-    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+    content:
+      '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
     createdAt: '2020-06-11 10:34:22',
     column: '1'
   },
   {
-    _id: 3,
+    _id: '3',
     title: '这是我的第三篇文章',
-    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+    content:
+      '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
     image: {
       url: 'https://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5edcc2329f2b4e28352b75eb.jpg?x-oss-process=image/resize,m_fill,m_pad,w_200,h_110'
     },
@@ -67,9 +72,10 @@ export const testPosts: PostProps[] = [
     column: '1'
   },
   {
-    _id: 1,
+    _id: '1',
     title: '这是我的第一篇文章',
-    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+    content:
+      '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
     image: {
       url: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee1980819f4ae08ac78d458.png?x-oss-process=image/resize,m_fill,m_pad,w_200,h_110'
     },
@@ -77,9 +83,10 @@ export const testPosts: PostProps[] = [
     column: '2'
   },
   {
-    _id: 2,
+    _id: '2',
     title: '这是我的第二篇文章',
-    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+    content:
+      '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
     image: {
       url: 'https://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5edcc2329f2b4e28352b75eb.jpg?x-oss-process=image/resize,m_fill,m_pad,w_200,h_110'
     },
@@ -87,9 +94,10 @@ export const testPosts: PostProps[] = [
     column: '2'
   },
   {
-    _id: 3,
+    _id: '3',
     title: '这是我的第三篇文章',
-    content: '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
+    content:
+      '"this is a new post you Very often we will need to map routes with the given pattern to the same component. For example we may have a User component which should be rendered for all users but with dif..."',
     createdAt: '2020-06-11 10:34:22',
     column: '2'
   }

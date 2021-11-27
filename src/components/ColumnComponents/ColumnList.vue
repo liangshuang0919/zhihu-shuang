@@ -8,8 +8,7 @@
           <!-- 这个是测试数据所用的 -->
           <!-- <img :src="column.avatar" :alt="column.title" class="rounded-circle border border-weight w-25 my-3" /> -->
           <!-- 这个是真实的后端数据 -->
-          <img :src="column.avatar.url" :alt="column.title"
-            class="rounded-circle border border-weight my-3" />
+          <img :src="column.avatar.url" :alt="column.title" class="rounded-circle border border-weight my-3" />
 
           <!-- 专栏名称 -->
           <h5 class="card-title">{{ column.title }}</h5>

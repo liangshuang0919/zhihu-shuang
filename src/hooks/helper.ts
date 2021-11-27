@@ -1,7 +1,7 @@
 // 一些封装的通用的函数
-import { ImageProps } from '../store'
+import { ColumnProps, UserProps, ImageProps } from '../store'
 
-// 封装用来获取阿里云服务器上图片自定义的大小的函数
+// 1、封装用来获取阿里云服务器上图片自定义的大小的函数
 export function generateFitUrl(data: ImageProps, width: number, height: number, format = ['m_pad']) {
   if (data && data.url) {
     const formatStr = format.reduce((prev, current) => {
@@ -11,6 +11,7 @@ export function generateFitUrl(data: ImageProps, width: number, height: number, 
   }
 }
 
+// 2、封装创建文章上传文件时，检查文件参数的方法
 // 检查文件类型的类型接口
 interface CheckCondition {
   format?: string[] // 允许文件上传的类型
@@ -46,4 +47,33 @@ export function beforeUploadCheck(file: File, condition: CheckCondition) {
     passed: isValidFormat && isValidSize, // 通没通过
     error // 错误原因
   }
+}
+
+// 3、封装的用户信息展示的参数
+export function addColumnAvatar(data: ColumnProps | UserProps, width: number, height: number) {
+  // 如果用户有头像的话
+  if (data.avatar) {
+    generateFitUrl(data.avatar, width, height)
+  } else {
+    // 用户或者专栏没有头像的话，使用默认的照片
+    const parseCol = data as ColumnProps
+
+    // 改变专栏或用户数据的图片或头像
+    data.avatar = {
+      fitUrl: require(parseCol.title ? '../assets/images/column.jpg' : '../assets/images/avatar.jpg')
+    }
+  }
+}
+
+export const objToArr = <T>(obj: { [key: string]: T }) => {
+  return Object.keys(obj).map((key) => obj[key])
+}
+
+export const arrToObj = <T extends { _id?: string }>(arr: Array<T>) => {
+  return arr.reduce((prev, current) => {
+    if (current._id) {
+      prev[current._id] = current
+    }
+    return prev
+  }, {} as { [key: string]: T })
 }

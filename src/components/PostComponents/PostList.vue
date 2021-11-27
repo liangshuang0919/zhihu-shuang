@@ -5,14 +5,14 @@
       <div class="card-body">
         <!-- 文章标题 -->
         <h4>
-          <router-link :to="`/posts/${post._id}/`">{{ post.title }}</router-link>
+          <router-link :to="`/post/${post._id}/`">{{ post.title }}</router-link>
         </h4>
 
         <!-- 文章展示的信息 -->
         <div class="row my-3 align-items-center">
           <!-- 文章图片 -->
           <div v-if="post.image.url" class="col-3 text-center">
-            <router-link :to="`/posts/${post._id}/`">
+            <router-link :to="`/post/${post._id}/`">
               <img :src="post.image.url" :alt="post.title" class="rounded-lg w-75" />
             </router-link>
           </div>

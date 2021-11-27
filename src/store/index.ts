@@ -10,15 +10,6 @@ import axios from 'axios'
 // testPosts 是专栏详情页的列表数据
 // import { testColumn, testPosts } from '../data/testData'
 
-// 定义的全局用户的信息接口
-export interface UserProps {
-  _id?: string // 用户的 ID
-  isLogin: boolean // 用户的登录状态
-  nickName?: string // 用户名
-  column?: number | string // 要新建文章的专栏的 id
-  email?: string // 用户的登录邮箱
-}
-
 // 图片的数据接口
 export interface ImageProps {
   _id?: string
@@ -27,9 +18,19 @@ export interface ImageProps {
   fitUrl?: string
 }
 
+// 定义的全局用户的信息接口
+export interface UserProps {
+  _id?: string // 用户的 ID
+  isLogin: boolean // 用户的登录状态
+  nickName?: string // 用户名
+  column?: number | string // 要新建文章的专栏的 id
+  email?: string // 用户的登录邮箱
+  avatar?: ImageProps
+}
+
 // 定义的首页专栏列表的数据接口
 export interface ColumnProps {
-  _id: number | string // 专栏的标识符
+  _id: string // 专栏的标识符
   title: string // 专栏的标题
   avatar?: ImageProps // 专栏的图片
   description: string // 转浏览的描述
@@ -37,14 +38,15 @@ export interface ColumnProps {
 
 // 定义的专栏详情页的数据接口
 export interface PostProps {
-  _id?: number | string // 文章的标识符
+  _id?: string // 文章的标识符
   title: string // 文章的标题
   excerpt?: string // 文章的摘要
   content?: string // 文章的内容
-  image?: ImageProps | string // 文章的图片
+  image?: ImageProps // 文章的图片
   column?: string | number // 将专栏详情页的数据与首页的专栏区域的内容，一一对应起来
   createdAt?: string // 文章的时间
-  author?: string // 创建文章的用户 id
+  author?: string | UserProps // 创建文章的用户 id
+  isHTML?: boolean
 }
 
 // 全局的错误状态接口
@@ -72,6 +74,7 @@ export interface GlobalDataProps {
   user: UserProps // 用户信息
   token: string // 用户登录时，获取到的 token 令牌
   columns: ColumnProps[] // 首页专栏列表数据展示的数据
+  post: PostProps[] // 某一个具体文章的数据
   posts: PostProps[] // 专栏详情页文章展示列表的数据类型
   loading: boolean // 全局的一个数据请求的时候，一个等待的状态
   error: GlobalErrorProps // 错误信息
@@ -106,6 +109,7 @@ const store = createStore<GlobalDataProps>({
     },
     token: localStorage.getItem('token') || '', // 用户登录时的 token 令牌，没有的时候设为空
     columns: [], // 首页专栏列表数据
+    post: [], // 具体的某一个文章的数据
     posts: [], // 专栏详情页列表数据
     loading: true, // 全局的一个数据请求的时候，一个等待的状态
     error: {
@@ -118,18 +122,18 @@ const store = createStore<GlobalDataProps>({
     // login(state) {
     //   state.user = { ...state.user, isLogin: true, userName: 'liangshuang' }
     // },
-    // 创建新的文章
-    createPost(state, newPost) {
-      state.posts.push(newPost)
+    // 处理从后端获取的首页指定的一个专栏的数据
+    // 第二个参数 rawData 是后端传递过来的数据
+    fetchColumn(state, rawData) {
+      state.columns = [rawData.data]
     },
     // 处理从后端获取的首页专栏列表的数据
-    // 第二个参数 rawData 是后端传递过来的数据
     fetchColumns(state, rawData) {
       state.columns = rawData.data.list
     },
-    // 处理从后端获取的首页指定的一个专栏的数据
-    fetchColumn(state, rawData) {
-      state.columns = [rawData.data]
+    // 处理从后端获取的当前文章的详情数据
+    fetchPost(state, rawData) {
+      state.posts = [rawData.data]
     },
     // 处理从后端获取的专栏详情页的数据
     fetchPosts(state, rawData) {
@@ -170,9 +174,27 @@ const store = createStore<GlobalDataProps>({
       localStorage.removeItem('token')
       // 将 axios 的头部携带的统一 token 删除掉
       delete axios.defaults.headers.common.Authorization
+    },
+    // 创建新的文章
+    createPost(state, rawData) {
+      state.posts.push(rawData)
     }
   },
   actions: {
+    // 获取首页专栏列表的某一个专栏的具体的后端数据
+    fetchColumn({ commit }, columnId) {
+      // 使用封装的 get 请求函数，进行异步请求数据
+      return getAndCommit(`/columns/${columnId}`, 'fetchColumn', commit)
+
+      // 使用 async + await 异步处理请求
+      // const { data } = await axios.get(`/columns/${columnId}`)
+      // commit('fetchColumn', data)
+
+      // 未加 async + await 异步处理请求
+      // axios.get(`/columns/${columnId}`).then((res) => {
+      //   commit('fetchColumn', res.data)
+      // })
+    },
     // 获取首页专栏列表的后端数据
     fetchColumns({ commit }) {
       // 使用封装的 get 请求函数，进行异步请求数据
@@ -187,19 +209,9 @@ const store = createStore<GlobalDataProps>({
       //   context.commit('fetchColumns', res.data)
       // })
     },
-    // 获取首页专栏列表的某一个专栏的具体的后端数据
-    fetchColumn({ commit }, columnId) {
-      // 使用封装的 get 请求函数，进行异步请求数据
-      return getAndCommit(`/columns/${columnId}`, 'fetchColumn', commit)
-
-      // 使用 async + await 异步处理请求
-      // const { data } = await axios.get(`/columns/${columnId}`)
-      // commit('fetchColumn', data)
-
-      // 未加 async + await 异步处理请求
-      // axios.get(`/columns/${columnId}`).then((res) => {
-      //   commit('fetchColumn', res.data)
-      // })
+    // 处理从后端获取的当前文章的详情数据
+    fetchPost({ commit }, columnId) {
+      return getAndCommit(`/posts/${columnId}`, 'fetchPost', commit)
     },
     // 获取首专栏详情页的后端数据
     fetchPosts({ commit }, columnId) {
@@ -243,12 +255,16 @@ const store = createStore<GlobalDataProps>({
   },
   getters: {
     // 接收一个参数，返回首页专栏列表的具体某一个列表的 id
-    getColumnById: (state) => (id: number | string) => {
+    getColumnById: (state) => (id: string) => {
       return state.columns.find((item) => item._id === id)
     },
-    // 接收一个参数，返回专栏详情页列表的具体某一个文章的 id
-    getPostsById: (state) => (columnId: number | string) => {
+    // 接收一个参数，某一个专栏的具体的文章内容
+    getPostsById: (state) => (columnId: string) => {
       return state.posts.filter((item) => item.column === columnId)
+    },
+    // 接收一个参数，返回具体的一个文章的内容
+    getPostById: (state) => (columnId: string) => {
+      return state.posts.find((item) => item._id === columnId)
     }
   }
 })

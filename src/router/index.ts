@@ -14,14 +14,15 @@ const routerHistory = createWebHashHistory()
 const Home = () => import('@/views/Home/Home.vue') // 首页页面
 const Login = () => import('@/views/Login/Login.vue') // 登录页页面
 const Register = () => import('@/views/Register/Register.vue') // 登录页页面
+const PostDetail = () => import('@/views/PostDetail/PostDetail.vue') // 文章详情页页面
 const ColumnDetails = () => import('@/views/ColumnDetails/ColumnDetails.vue') // 专栏详情页页面
-const CreatePost = () => import('@/views/CreatePost/CreatePost.vue') // 编辑文章页面
-const CreateColumn = () => import('@/views/CreateColumn/CreateColumn.vue') // 上传文章页面
+const CreatePost = () => import('@/views/CreatePost/CreatePost.vue') // 创建文章页面
 
 // 创建 vue-router 实例
 const router = createRouter({
   history: routerHistory,
   routes: [
+    // 首页页面路由
     {
       path: '/',
       name: 'home',
@@ -30,6 +31,7 @@ const router = createRouter({
         title: 'Shuang-首页'
       }
     },
+    // 登录页面路由
     {
       path: '/login',
       name: 'login',
@@ -39,6 +41,7 @@ const router = createRouter({
         title: 'Shuang-登录'
       }
     },
+    // 注册页面路由
     {
       path: '/register',
       name: 'register',
@@ -47,29 +50,32 @@ const router = createRouter({
         title: 'Shuang-注册'
       }
     },
+    // 文章详情路由
+    {
+      path: '/post/:id',
+      name: 'post-detail',
+      component: PostDetail,
+      meta: {
+        title: 'Shuang-专栏详情'
+      }
+    },
+    // 专栏详情路由
     {
       path: '/column/:id',
-      name: 'column',
+      name: 'column-details',
       component: ColumnDetails,
       meta: {
         title: 'Shuang-专栏详情'
       }
     },
+    // 新建文章路由
     {
       path: '/createpost',
       name: 'createpost',
       component: CreatePost,
       meta: {
-        title: 'Shuang-文章编辑',
+        title: 'Shuang-创建文章',
         requiredLogin: true // 只有登录了的用户才能创建帖子
-      }
-    },
-    {
-      path: '/createcolumn',
-      name: 'createcolumn',
-      component: CreateColumn,
-      meta: {
-        title: 'Shuang-上传文章'
       }
     }
   ]
@@ -80,6 +86,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const { user, token } = store.state
   const { requiredLogin, redirectAlreadyLogin } = to.meta
+
+  if (to.meta.title) {
+    document.title = to.meta.title + ''
+  } else {
+    document.title = 'Shuang-zhihu'
+  }
 
   // 1、判断用户是否登录
   if (!user.isLogin) {
