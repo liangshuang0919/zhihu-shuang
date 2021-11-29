@@ -25,7 +25,7 @@
 
 <script lang="ts">
 // 导入 vue 中的方法
-import { defineComponent, PropType, ref } from 'vue'
+import { defineComponent, PropType, ref, watch } from 'vue'
 
 // 导入 axios 模块
 import axios from 'axios'
@@ -51,6 +51,10 @@ export default defineComponent({
     // 用来检查当前上传的文件否满足用户自定义的需求
     beforeUpload: {
       type: Function as PropType<CheckFunction>
+    },
+    // 传递过来的是编辑文章页面的数据（从文章中进行编辑）
+    uploaded: {
+      type: Object
     }
   },
   // 禁用 Attribute 继承
@@ -62,10 +66,21 @@ export default defineComponent({
     const fileInput = ref<null | HTMLInputElement>(null)
 
     // 初始化文件上传的状态
-    const fileStatus = ref<UploadStatus>('ready')
+    const fileStatus = ref<UploadStatus>(props.uploaded ? 'success' : 'ready')
 
     // 获取插槽上的值，传递给父组件
-    const uploadedData = ref()
+    const uploadedData = ref(props.uploaded)
+
+    // 监听父组件传递过来的 uploaded 值
+    watch(
+      () => props.uploaded,
+      (newValue) => {
+        if (newValue) {
+          fileStatus.value = 'success' // 更改成功状态
+          uploadedData.value = newValue // 更新 uploadedData 的值
+        }
+      }
+    )
 
     // 点击 btn 按钮，触发 input 上传文件的事件
     const triggerUpload = () => {

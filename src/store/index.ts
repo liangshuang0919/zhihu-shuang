@@ -3,7 +3,7 @@
 import { createStore, Commit } from 'vuex'
 
 // 导入 axios 网络封装模块
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 
 // 导入 testData 中两个数据
 // testColumn 是首页专栏列表的数据
@@ -74,7 +74,6 @@ export interface GlobalDataProps {
   user: UserProps // 用户信息
   token: string // 用户登录时，获取到的 token 令牌
   columns: ColumnProps[] // 首页专栏列表数据展示的数据
-  post: PostProps[] // 某一个具体文章的数据
   posts: PostProps[] // 专栏详情页文章展示列表的数据类型
   loading: boolean // 全局的一个数据请求的时候，一个等待的状态
   error: GlobalErrorProps // 错误信息
@@ -101,6 +100,22 @@ const postAndCommit = async (url: string, mutationName: string, commit: Commit, 
   return data
 }
 
+// 封装一个可以处理多种请求的函数，既可以处理 GET、POST、PATCH 等等
+// 参数一：是进行请求的 url 地址；类型是 string 类型
+// 参数二：是要进行数据处理的 mutations 方法；类型是 string 类型
+// 参数三：是 commit 方法；类型是 Commit 类型，需要从 vuex 中导入
+// 参数四：config 就是 axios 要进行发送数据的请求配置，这个需要在 axios 中导入，默认是 GET 请求
+const asyncAndCommit = async (
+  url: string,
+  mutationName: string,
+  commit: Commit,
+  config: AxiosRequestConfig = { method: 'GET' }
+) => {
+  const { data } = await axios(url, config)
+  commit(mutationName, data)
+  return data
+}
+
 // 创建 vuex 状态管理的数据，规定的是自定义的全局数据的一个接口类型
 const store = createStore<GlobalDataProps>({
   state: {
@@ -109,7 +124,6 @@ const store = createStore<GlobalDataProps>({
     },
     token: localStorage.getItem('token') || '', // 用户登录时的 token 令牌，没有的时候设为空
     columns: [], // 首页专栏列表数据
-    post: [], // 具体的某一个文章的数据
     posts: [], // 专栏详情页列表数据
     loading: true, // 全局的一个数据请求的时候，一个等待的状态
     error: {
@@ -138,6 +152,21 @@ const store = createStore<GlobalDataProps>({
     // 处理从后端获取的专栏详情页的数据
     fetchPosts(state, rawData) {
       state.posts = rawData.data.list
+    },
+    // 使用同步方法更新文章的内容
+    updatePost(state, { data }) {
+      state.posts = state.posts.map((item) => {
+        // 获取到与当前文章 id 相同的文章数据
+        if (item._id === data._id) {
+          return data
+        } else {
+          return item
+        }
+      })
+    },
+    // 使用同步方法删除文章
+    deletePost(state, { data }) {
+      state.posts = state.posts.filter((item) => item._id !== data._id)
     },
     // 页面请求数据的时候，对等待状态 loading 进行修改
     setLoading(state, status) {
@@ -226,6 +255,19 @@ const store = createStore<GlobalDataProps>({
       // axios.get(`/columns/${columnId}/posts`).then((res) => {
       //   commit('fetchPosts', res.data)
       // })
+    },
+    // 更新文章的异步请求方法
+    updatePost({ commit }, { id, payload }) {
+      return asyncAndCommit(`/posts/${id}`, 'updatePost', commit, {
+        method: 'PATCH',
+        data: payload
+      })
+    },
+    // 删除文章的异步请求方法
+    deletePost({ commit }, id) {
+      return asyncAndCommit(`/posts/${id}`, 'deletePost', commit, {
+        method: 'DELETE'
+      })
     },
     // 发送请求的时候，获取用户获取到的信息
     // 因为上面的 axios 更改了头信息，这里就可以获取到被 token 保护到的用户信息了

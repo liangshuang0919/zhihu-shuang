@@ -1,16 +1,16 @@
 <template>
   <div class="validate-input-container pb-3">
-    <input v-if="tag !== 'textarea'" class="form-control" :class="{ 'is-invalid': inputRef.error }" :value="inputRef.val"
-      @blur="validateInput" @input="updateValue" v-bind="$attrs" />
-    <textarea v-else style="resize: none" class="form-control" :class="{ 'is-invalid': inputRef.error }" :value="inputRef.val"
-      @blur="validateInput" @input="updateValue" v-bind="$attrs" />
+    <input v-if="tag !== 'textarea'" class="form-control" :class="{ 'is-invalid': inputRef.error }"
+      @blur="validateInput" v-bind="$attrs" v-model="inputRef.val" />
+    <textarea v-else style="resize: none" class="form-control" :class="{ 'is-invalid': inputRef.error }"
+      @blur="validateInput" v-bind="$attrs" v-model="inputRef.val" />
     <span v-show="inputRef.error" class="invalid-feedback">{{ inputRef.message }}</span>
   </div>
 </template>
 
 <script lang="ts">
 // 导入要用到的 vue 中的方法
-import { defineComponent, reactive, PropType, onMounted } from 'vue'
+import { defineComponent, reactive, PropType, onMounted, computed } from 'vue'
 
 // 导入 ValidateForm.vue 组件的 emitter 监听器
 import { emitter } from './ValidateForm.vue'
@@ -53,17 +53,16 @@ export default defineComponent({
 
     // 表单输入框的一些信息
     const inputRef = reactive({
-      val: props.modelValue || '', // 输入框的内容
+      // 输入框的内容，使用计算属性的 get 和 set 方法
+      val: computed({
+        get: () => props.modelValue || '',
+        set: (val) => {
+          context.emit('update:modelValue', val)
+        }
+      }),
       error: false, // 验证是否报错
       message: '' // 错误信息
     })
-
-    // 进行数据双向绑定的事件，实时更新表单输入的内容
-    const updateValue = (e: KeyboardEvent) => {
-      const targetValue = (e.target as HTMLInputElement).value // 存储表单内部输入的内容
-      inputRef.val = targetValue // 将表单的内容赋值给要进行渲染的数据变量
-      context.emit('update:modelValue', targetValue) // vue3 进行数据双向绑定的写法，要创建一个 update:modelValue 方法
-    }
 
     // 失去焦点的时候要发生的回调函数，对表单进行一个验证
     const validateInput = () => {
@@ -111,7 +110,6 @@ export default defineComponent({
 
     return {
       inputRef, // 表单的内容，会在页面中渲染出了
-      updateValue, // 数据的双向绑定，获取表单输入的内容
       validateInput // 表单失去焦点的时候的回调函数，进行表单验证
     }
   }

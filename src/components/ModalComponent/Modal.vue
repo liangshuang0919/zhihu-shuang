@@ -13,6 +13,8 @@
               <span aria-hidden="true" @click="onClose">&times;</span>
             </button>
           </div>
+
+          <!-- 插槽，可以自定义中间的内容 -->
           <div class="modal-body">
             <slot></slot>
           </div>
@@ -38,7 +40,7 @@ import useDOMCreate from '../../hooks/useDOMCreate'
 export default defineComponent({
   name: 'modal',
   props: {
-    title: String, // 模态框的标题
+    title: String, // 提示框的标题
     // 父组件传来的控制提示框是否显示
     visible: {
       type: Boolean,
@@ -60,6 +62,7 @@ export default defineComponent({
     const onConfirm = () => {
       context.emit('modal-on-confirm')
     }
+
     return {
       onClose, // 关闭提示框
       onConfirm // 确认删除文字

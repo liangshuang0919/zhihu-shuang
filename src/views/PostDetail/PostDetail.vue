@@ -29,8 +29,8 @@
       <div v-html="currentHTML"></div>
 
       <!-- 如果是自己的文字，则可以显示编辑删除按钮 -->
-      <div v-if="showEditArea" class="btn-group mt-5">
-        <router-link type="button" class="btn btn-success" :to="{name: 'create', query: { id: currentPost._id}}">
+      <div v-if="true" class="btn-group mt-5">
+        <router-link type="button" class="btn btn-success" :to="{name: 'createpost', query: {id: currentPost._id }}">
           编辑
         </router-link>
         <button type="button" class="btn btn-danger" @click.prevent="modalIsVisible = true">删除</button>
@@ -92,7 +92,7 @@ export default defineComponent({
       store.dispatch('fetchPost', postId)
     })
 
-    // 通过动态路由找到对应 id 的文字数据
+    // 通过动态路由找到对应 id 的文章数据
     const currentPost = computed<PostProps>(() => store.getters.getPostById(postId))
 
     // 创建要渲染在页面上的 html 内容
@@ -107,19 +107,6 @@ export default defineComponent({
       return isHTML
     })
 
-    // 编辑文章事件
-    const showEditArea = computed(() => {
-      const { isLogin, _id } = store.state.user
-
-      if (currentPost.value && currentPost.value.author && isLogin) {
-        const postAuthor = currentPost.value.author as UserProps
-
-        return postAuthor._id === _id
-      } else {
-        return false
-      }
-    })
-
     // 获取专栏图片
     const currentImageUrl = computed(() => {
       if (currentPost.value && currentPost.value.image) {
@@ -131,26 +118,51 @@ export default defineComponent({
       }
     })
 
+    // 是否显示编辑、删除按钮区域
+    const showEditArea = computed(() => {
+      // 获取登陆的信息
+      const { isLogin, _id } = store.state.user
+
+      // 判断文章数据是否存在；该文章的作者是否存在；当用户是否登录
+      if (currentPost.value && currentPost.value.author && isLogin) {
+        // 对文章的作者做一个类型的断言，让其等于 UserProps 类型
+        const postAuthor = currentPost.value.author as UserProps
+
+        // 返回一个 boolean 值：当前文章作者的 id，与当前登录的用户的 id 是否相等
+        return postAuthor._id === _id
+      } else {
+        return false
+      }
+    })
+
+    // 删除文章的事件
     const hideAndDelete = () => {
+      // 将提示框先隐藏
       modalIsVisible.value = false
+
+      // 发送删除文章时间请求
       store.dispatch('deletePost', postId).then((rawData: ResponseType<PostProps>) => {
-        createMessage('删除成功，2秒后跳转到专栏首页', 'success', 2000)
+        createMessage('删除成功，2s 后跳转到专栏首页', 'success')
+
+        // 路由跳转
         setTimeout(() => {
           router.push({
             name: 'column',
-            params: { id: rawData.data.column }
+            params: {
+              id: rawData.data.column
+            }
           })
         }, 2000)
       })
     }
 
     return {
-      currentPost,
-      currentImageUrl,
-      currentHTML,
-      showEditArea,
-      modalIsVisible,
-      hideAndDelete
+      currentPost, // 文章数据
+      currentImageUrl, // 要渲染的专栏的图片
+      currentHTML, // 要渲染的文章内容
+      showEditArea, // 是否显示编辑文章的按钮
+      modalIsVisible, // 控制提示框的显示隐藏
+      hideAndDelete // 删除文章的事件
     }
   }
 })

@@ -1,6 +1,6 @@
 <template>
   <!-- 专栏详情页区域 -->
-  <div class="column-detail-page w-75 mx-auto">
+  <div class="column-detail-page w-50 mx-auto">
     <post-header :column="column"></post-header>
 
     <!-- 专栏详情页文章具体内容区域 -->

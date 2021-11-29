@@ -20,8 +20,7 @@
           <!-- 写法一：to 使用对象的形式 -->
           <!-- <router-link :to="{ name: 'column_details', params: { id: column.id } }" class="btn btn-outline-primary">进入专栏</router-link> -->
           <!-- 写法二：to 使用模板字符串 -->
-          <router-link :to="`/column/${column._id}`" class="btn btn-outline-primary">进入专栏
-          </router-link>
+          <router-link :to="`/column/${column._id}`" class="btn btn-outline-primary">进入专栏</router-link>
         </div>
       </div>
     </div>
@@ -77,8 +76,31 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.card-body img {
-  width: 50px;
-  height: 50px;
+// 专栏列表的样式
+.card-body {
+  // 专栏列表头像的样式
+  img {
+    width: 50px;
+    height: 50px;
+  }
+
+  // 专栏标题的样式
+  .card-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+
+  // 专栏列表简介的样式
+  .card-text {
+    height: 4.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
 }
 </style>

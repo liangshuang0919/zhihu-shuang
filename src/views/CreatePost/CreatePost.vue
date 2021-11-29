@@ -1,10 +1,11 @@
 <template>
   <!-- 创建文章页面 -->
   <div class="create-post-page w-75">
-    <h4>新建文章</h4>
+    <h4>{{ isEditMode ? '编辑文章' : '创建文章' }}</h4>
     <!-- 上传图片组件 -->
     <!-- bootstrap 的水平居中 align-items-center justify-content-center -->
-    <uploader action="/upload" :beforeUpload="uploadCheck" @file-upload-success="handelFileUploaded"
+    <uploader action="/upload" :uploaded="uploadedData" :beforeUpload="uploadCheck"
+      @file-upload-success="handelFileUploaded"
       class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4">
       <h2>点击上传头图</h2>
 
@@ -30,20 +31,19 @@
       <!-- 文章标题区域 -->
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
-        <validate-input :rules="titleRules" v-model="formData.titleVal" placeholder="请输入文章标题"
-          type="text" />
+        <validate-input :rules="titleRules" v-model="formData.titleVal" placeholder="请输入文章标题" type="text" />
       </div>
 
       <!-- 专栏详情区域 -->
       <div class="mb-3">
         <label class="form-label">专栏详情：</label>
-        <validate-input :rules="contentRules" v-model="formData.contentVal" placeholder="请输入专栏详情"
-          tag="textarea" rows="12" />
+        <validate-input :rules="contentRules" v-model="formData.contentVal" placeholder="请输入专栏详情" tag="textarea"
+          rows="12" />
       </div>
 
       <!-- 发表文章按钮 -->
       <template #submit>
-        <button class="btn btn-primary btn-large w-100">发表文章</button>
+        <button class="btn btn-primary btn-large w-100">{{ isEditMode ? '更新文章' : '发表文章' }}</button>
       </template>
     </validate-form>
   </div>
@@ -51,7 +51,7 @@
 
 <script lang="ts">
 // 导入要用到的 vue 的方法
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, ref, reactive, onMounted } from 'vue'
 
 // 导入 vuex 的获取 vuex 数据的 useStore 方法
 import { useStore } from 'vuex'
@@ -62,7 +62,7 @@ import { GlobalDataProps, PostProps, ResponseType, ImageProps } from '../../stor
 // 导入 vue-router 的 useRouter 和 useRoute 方法
 // useRouter 获取路由器，用来进行路由的跳转
 // useRoute 是获取跳转的路由对象，上面有各种方法
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 // 导入我封装好的全局提示框函数
 import createMessage from '../../hooks/useMessage'
@@ -86,11 +86,20 @@ export default defineComponent({
     Uploader // 图片上传组件
   },
   setup() {
-    // 获取路由器，用来进行路由的跳转
-    const router = useRouter()
-
     // 获取 vuex 的数据
     const store = useStore<GlobalDataProps>()
+
+    // 初始化 route，获取当前路由的信息
+    const route = useRoute()
+    // 初始化 router，获取路由的各种方法和属性
+    const router = useRouter()
+
+    // 初始化 isEditMode，判断当前的创建文章页面是否是编辑模式
+    // 两个 !! 将后面的值变为 boolean 类型，路由有 id 参数的话表示当前是编辑模式
+    const isEditMode = !!route.query.id
+
+    // 初始化一个对象，要传递给子组件 Uploader.vue 的数据
+    const uploadedData = ref()
 
     // 表单输入框的内容
     const formData = reactive({
@@ -115,6 +124,28 @@ export default defineComponent({
       }
     }
 
+    onMounted(() => {
+      // 如果当前是编辑文章的界面
+      if (isEditMode) {
+        // 发送获取文章数据的请求
+        store.dispatch('fetchPost', route.query.id).then((rawData: ResponseType<PostProps>) => {
+          // 初始化请求的数据，将这个数据传递给子组件 Uploader.vue，让内容显示出来
+          const currentPost = rawData.data
+
+          // 如果文字图片存在
+          if (currentPost.image) {
+            // 要传给子组件的数据赋上图片的值
+            uploadedData.value = {
+              data: currentPost.image
+            }
+          }
+
+          formData.titleVal = currentPost.title // 改变页面中文章标题
+          formData.contentVal = currentPost.content || '' // 改变页面中的内容
+        })
+      }
+    })
+
     // 发表文章按钮的事件
     const onFormSubmit = (result: boolean) => {
       if (result) {
@@ -134,11 +165,17 @@ export default defineComponent({
 
           // 如果用户创建文章的时候，上传了图片，那么就将这个图片的 id 加给 newPost
           if (imageId) {
-            newPost.image = imageId
+            newPost.image._id = imageId
           }
 
+          // 判断当前是否为编辑状态，是的话就调用 updatePost 更新文章的方法；否则调用 createPost 创建文章的方法
+          const actionName = isEditMode ? 'updatePost' : 'createPost'
+
+          // 初始化要发送的数据，如果是编辑状态，更新文章的话还需要带上文章的 id；否则直接发送文章的数据即可
+          const sendData = isEditMode ? { id: route.query.id, payload: newPost } : newPost
+
           // 新的文章添加给 vuex 的方法，添加到数据当中
-          store.dispatch('createPost', newPost).then(() => {
+          store.dispatch(actionName, sendData).then(() => {
             // 创建成功提示框
             createMessage('发表文章成功，2s 后跳转到文章', 'success')
 
@@ -183,6 +220,8 @@ export default defineComponent({
     }
 
     return {
+      uploadedData, // 要返回给子组件的值
+      isEditMode, // 判断当前是否为文章的编辑状态
       formData, // 表单输入框内容
       titleRules, // 文章标题的输入规则
       contentRules, // 文章内容的输入规则
