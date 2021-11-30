@@ -13,6 +13,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     semi: 0,
     '@typescript-eslint/explicit-module-boundary-types': ['off'],
+    '@typescript-eslint/no-explicit-any': ['off'],
     'space-before-function-paren': 0,
     indent: 'off',
     '@typescript-eslint/ban-types': [

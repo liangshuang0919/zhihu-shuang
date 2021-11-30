@@ -1,6 +1,6 @@
 <template>
   <!-- 全局头部 header 区域 -->
-  <nav class="navbar navbar-dark bg-primary justify-content-between mb-4 py-3">
+  <nav class="navbar navbar-dark bg-secondary justify-content-between mb-4 py-3 golbal-header">
     <div class="container-fluid">
       <!-- 左侧 logo 和网站名区域 -->
       <router-link class="navbar-brand vertical-align-center introduce" to="/">
@@ -12,7 +12,7 @@
       <!-- 右侧登录注册按钮 -->
       <ul v-if="user ? !user.isLogin : false" class="list-inline mb-0">
         <li class="list-inline-item">
-          <router-link to="/login" class="btn btn-primary my-2">登录</router-link>
+          <router-link to="/login" class="btn btn-dark my-2">登录</router-link>
         </li>
         <li class="list-inline-item">
           <router-link to="/register" class="btn btn-outline-light my-2">注册</router-link>
@@ -96,8 +96,10 @@ export default defineComponent({
       // 清空 token
       store.commit('logout')
 
+      // 提示框
       createMessage('退出成功，2s 后将跳转到登录页面~', 'success')
 
+      // 跳转路由
       setTimeout(() => {
         router.push('/login')
       }, 2000)
@@ -109,11 +111,19 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.introduce {
-  vertical-align: middle;
+// 整个页面的样式
+.golbal-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 
-  p {
-    display: block;
+  // 左侧 logo 的样式
+  .introduce {
+    vertical-align: middle;
+
+    p {
+      display: block;
+    }
   }
 }
 </style>

@@ -1,7 +1,21 @@
 <template>
   <!-- 专栏详情页区域 -->
   <div class="column-detail-page w-50 mx-auto">
-    <post-header :column="column"></post-header>
+    <!-- 专栏详情页头部区域 -->
+    <div class="column-info row mb-4 border-bottom pb-4 align-items-center" v-if="column">
+      <!-- 专栏详情页的图片 -->
+      <div class="col-3 text-center">
+        <img :src="column.avatar.url" :alt="column.title" class="rounded-circle border w-100" />
+      </div>
+
+      <!-- 专栏详情页的内容 -->
+      <div class="col-9">
+        <!-- 专栏详情页的题目 -->
+        <h3>{{ column.title }}</h3>
+        <!-- 专栏详情页的文章内容 -->
+        <p class="text-muted">{{ column.description }}</p>
+      </div>
+    </div>
 
     <!-- 专栏详情页文章具体内容区域 -->
     <post-list :list="list"></post-list>
@@ -19,15 +33,13 @@ import { useStore } from 'vuex'
 // useRoute 方法是获取路由的具体信息，是一个对象
 import { useRoute } from 'vue-router'
 
-// 导入 PostHeader.vue 组件（专栏详情页头部介绍信息）
-import PostHeader from '../../components/PostComponents/PostHeader.vue'
 // 导入 PostList.vue 组件（专栏详情页文章具体内容组件）
-import PostList from '../../components/PostComponents/PostList.vue'
+import PostList from '../../components/PostComponent/PostList.vue'
 
 export default defineComponent({
   name: 'ColumnDetails',
   components: {
-    PostHeader, // 专栏详情页头部介绍信息
+    // PostHeader, // 专栏详情页头部介绍信息
     PostList // 专栏详情页文章具体内容组件
   },
   setup() {

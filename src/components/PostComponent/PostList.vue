@@ -57,7 +57,7 @@ export default defineComponent({
         if (!post.image) {
           post.image.url = require('@/assets/images/column.jpg')
         } else {
-          post.image.url = post.image.url + '?x-oss-process=image/resize,m_pad,h_50,w_50'
+          post.image.url = post.image.url.split('?')[0] + '?x-oss-process=image/resize,m_pad,h_50,w_50'
         }
         // 使用封装的 generateFitUrl 用来获取阿里云服务器上图片自定义的大小
         // generateFitUrl(post.image as ImageProps, 200, 110, ['m_fill'])

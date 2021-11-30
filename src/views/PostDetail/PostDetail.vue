@@ -2,15 +2,14 @@
   <!-- 文章详情页组件 -->
   <div class="post-detail-page">
     <!-- 删除文章的提示框组件 -->
-    <modal title="删除文章" :visible="modalIsVisible" @modal-on-close="modalIsVisible = false"
-      @modal-on-confirm="hideAndDelete">
+    <modal title="删除文章" :visible="modalIsVisible" @modal-on-close="modalIsVisible = false" @modal-on-confirm="hideAndDelete">
       <p>确定要删除这篇文章吗？</p>
     </modal>
 
     <!-- 文章展示组件 -->
     <article class="w-75 mx-auto mb-5 pb-3" v-if="currentPost">
       <!-- 文章的图片 -->
-      <img :src="currentImageUrl" alt="currentPost.title" class="rounded-lg img-fluid my-4"
+      <img :src="currentImageUrl" alt="currentPost.title" class="rounded-lg img-fluid my-4 current-mage"
         :v-if="currentImageUrl ? true : false">
 
       <!-- 文章的标题 -->
@@ -112,7 +111,7 @@ export default defineComponent({
       if (currentPost.value && currentPost.value.image) {
         const { image } = currentPost.value
 
-        return (image as ImageProps).url + '?x-oss-process=image/resize,w_850'
+        return (image as ImageProps).url.split('?')[0] + '?x-oss-process=image/resize,w_850'
       } else {
         return null
       }
@@ -167,3 +166,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="less" >
+.current-mage {
+  width: 100%;
+  max-height: 400px;
+}
+</style>

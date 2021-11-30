@@ -1,14 +1,14 @@
 <template>
   <!-- 首页区域 -->
-  <div class="home-page">
-    <section class="py-5 text-center container">
+  <div class="home-page text-center">
+    <section class="py-5 container">
       <!-- 首页内容 “随心写作，自由表达” 区域 -->
       <div class="row py-lg-5">
         <div class="col-lg-6 col-md-8 mx-auto">
-          <img src="../../assets/images/callout.svg" alt="callout" class="w-50" />
+          <img src="../../assets/images/callout.jpg" alt="callout" class="w-50" />
           <h2 class="font-weight-light">随心写作，自由表达</h2>
           <p>
-            <router-link to="/createpost" class="btn btn-primary my-2">开始写文章</router-link>
+            <router-link to="/createpost" class="btn btn-outline-dark my-2">开始写文章</router-link>
           </p>
         </div>
       </div>
@@ -20,7 +20,11 @@
     <!-- 首页的专栏区域 -->
     <column-list :list="columnData" />
 
-    <!-- <button class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25" @click="loadMorePage" v-if="!isLastPage">加载更多</button> -->
+    <!-- 加载更多 -->
+    <button class="btn btn-outline-secondary mt-2 mb-5 mx-auto btn-block w-25" @click="loadMorePage"
+      v-if="!isLastPage">
+      加载更多
+    </button>
   </div>
 </template>
 
@@ -34,10 +38,11 @@ import { useStore } from 'vuex'
 // 导入 vuex 中定义的全局数据 GlobalDataProps 接口, FileProps, ImageProps
 import { GlobalDataProps } from '../../store'
 
+// 导入自定义的加载更多的功能函数
+import useLoadMore from '../../hooks/useLoadMore'
+
 // 导入首页专栏部分组件和定义的 ColumnProps 数据类型
 import ColumnList from '../../components/ColumnComponents/ColumnList.vue'
-// 导入全局的一个消息提示框组件
-import createMessage from '../../hooks/useMessage'
 
 export default defineComponent({
   name: 'Home',
@@ -48,44 +53,29 @@ export default defineComponent({
     // 获取全局 vuex 数据
     const store = useStore<GlobalDataProps>()
 
+    // 获取服务器中所有数据的总数
+    const total = computed(() => store.state.columns.total)
+    const currentPage = computed(() => store.state.columns.currentPage)
+
     // 页面最开始加载的时候，获取后端的专栏列表数据，将其渲染在页面上
     onMounted(() => {
-      store.dispatch('fetchColumns')
+      store.dispatch('fetchColumns', { pageSize: 6 })
     })
 
     // 通过 vuex 获取全局的一个首页专栏列表的数据
-    const columnData = computed(() => store.state.columns)
+    const columnData = computed(() => store.getters.getColumns)
 
-    // 创建一个用户检查上传文件类型的一个自定义事件
-    const beforeUpload = (file: File) => {
-      // 检查当前文件是否为 JPG 的格式
-      const isImage = file.type === 'image/jpeg'
-
-      // 当文件不是 JPG 格式的时候
-      if (!isImage) {
-        createMessage('上传的图片只能是 JPG 格式，请重新选择图片！', 'error')
-      }
-
-      return isImage
-    }
-
-    // 子组件上传文件成功，返回给父组件一个上传成功的事件
-    // 将返回的数据 rawData 定义成 FileProps 类型
-    // 将 FileProps 中的 data 类型定义为 ImageProps 泛型
-    // const onFileUploadedSuccess = (rawData: FileProps<ImageProps>) => {
-    //   createMessage(`成功上传图片ID ${rawData.data._id}`, 'success')
-    // }
-
-    // 子组件上传文件失败，返回给父组件一个上传失败的事件
-    // const onFileUploadedError = (rawData: FileProps<ImageProps>) => {
-    //   createMessage(`上传图片失败ID ${rawData.data._id}`, 'error')
-    // }
+    // 获取到加载更多的事件 loadMorePage，和当前是否是最后一页数据 isLatsPage
+    const { loadMorePage, isLastPage } = useLoadMore('fetchColumns', total, {
+      pageSize: 6,
+      // 发送请求的时候，当前页数如果有值，那么需要 +1；如果没有值，表示当前第一次请求，所以第一次请求应该为第 2 页
+      currentPage: currentPage.value ? currentPage.value + 1 : 2
+    })
 
     return {
       columnData, // 首页专栏列表的数据
-      beforeUpload // 创建一个用户检查上传文件类型的一个自定义事件
-      // onFileUploadedSuccess, // 子组件上传文件成功，返回给父组件一个上传成功的事件
-      // onFileUploadedError // 子组件上传文件失败，返回给父组件一个上传失败的事件
+      loadMorePage, // 加载更多事件
+      isLastPage // 判断当前是否是最后一页数据
     }
   }
 })

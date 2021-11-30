@@ -6,20 +6,20 @@
       <!-- 输入邮箱区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3 w-50 input-area">
         <label for="exampleInputEmail" class="form-label">邮箱地址</label>
-        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules"
-          v-model="formData.email" ref="emailRef"></validate-input>
+        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules" v-model="formData.email"
+          ref="emailRef"></validate-input>
       </div>
 
       <!-- 输入密码区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3 w-50 input-area">
         <label for="exampleInputPassword" class="form-label">邮箱密码</label>
-        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码"
-          :rules="passwordRules" v-model="formData.password"></validate-input>
+        <validate-input id="exampleInputPassword" type="password" placeholder="请输入密码" :rules="passwordRules"
+          v-model="formData.password"></validate-input>
       </div>
 
       <!-- 提交按钮区域（对应 ValidateForm.vue 组件 name 为 submit 的插槽） -->
       <template #submit>
-        <span class="btn btn-primary w-50">登录</span>
+        <span class="btn btn-outline-dark w-50">登录</span>
       </template>
     </validate-form>
   </div>

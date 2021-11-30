@@ -4,8 +4,7 @@
     <h4>{{ isEditMode ? '编辑文章' : '创建文章' }}</h4>
     <!-- 上传图片组件 -->
     <!-- bootstrap 的水平居中 align-items-center justify-content-center -->
-    <uploader action="/upload" :uploaded="uploadedData" :beforeUpload="uploadCheck"
-      @file-upload-success="handelFileUploaded"
+    <uploader action="/upload" :uploaded="uploadedData" :beforeUpload="uploadCheck" @file-upload-success="handelFileUploaded"
       class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4">
       <h2>点击上传头图</h2>
 
@@ -37,13 +36,12 @@
       <!-- 专栏详情区域 -->
       <div class="mb-3">
         <label class="form-label">专栏详情：</label>
-        <validate-input :rules="contentRules" v-model="formData.contentVal" placeholder="请输入专栏详情" tag="textarea"
-          rows="12" />
+        <validate-input :rules="contentRules" v-model="formData.contentVal" placeholder="请输入专栏详情" tag="textarea" rows="12" />
       </div>
 
       <!-- 发表文章按钮 -->
       <template #submit>
-        <button class="btn btn-primary btn-large w-100">{{ isEditMode ? '更新文章' : '发表文章' }}</button>
+        <button class="btn btn-outline-secondary btn-large w-100">{{ isEditMode ? '更新文章' : '发表文章' }}</button>
       </template>
     </validate-form>
   </div>

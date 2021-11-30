@@ -20,7 +20,7 @@
           <!-- 写法一：to 使用对象的形式 -->
           <!-- <router-link :to="{ name: 'column_details', params: { id: column.id } }" class="btn btn-outline-primary">进入专栏</router-link> -->
           <!-- 写法二：to 使用模板字符串 -->
-          <router-link :to="`/column/${column._id}`" class="btn btn-outline-primary">进入专栏</router-link>
+          <router-link :to="`/column/${column._id}`" class="btn btn-outline-secondary">进入专栏</router-link>
         </div>
       </div>
     </div>
@@ -59,7 +59,7 @@ export default defineComponent({
         } else {
           // 因为图片是从阿里云上获取的，可以控制图片的大小
           // 这个表示将图片设为 50 * 50 的大小
-          column.avatar.url = column.avatar.url + '?x-oss-process=image/resize,m_pad,h_50,w_50'
+          column.avatar.url = column.avatar.url.split('?')[0] + '?x-oss-process=image/resize,m_pad,h_50,w_50'
         }
 
         // 使用封装的 generateFitUrl 用来获取阿里云服务器上图片自定义的大小

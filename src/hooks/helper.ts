@@ -65,15 +65,42 @@ export function addColumnAvatar(data: ColumnProps | UserProps, width: number, he
   }
 }
 
+// 将数组转变为对象
+// T extend { _id?:string} 这是用来约束泛型，表示上面至少有 _id 这个关键字
+export const arrToObj = <T extends { _id?: string }>(arr: Array<T>) => {
+  // 使用 reduce 将数组的内容插入到一个对象中
+  return arr.reduce((prev, current) => {
+    // 判断当前数组数据的内容中有没有 _id
+    if (current._id) {
+      // 将 _id 加入到对象中
+      prev[current._id] = current
+    }
+    return prev
+    // {} as { [key: string]: T } 是类型断言，让对象可以加上下面这种类型
+  }, {} as { [key: string]: T })
+}
+
+// // 下面是测试 arrToObj 方法，将数组转换为对象
+// interface TestProps {
+//   _id: string
+//   name: string
+// }
+// const testData: TestProps[] = [
+//   { _id: '1', name: 'a' },
+//   { _id: '2', name: 'b' }
+// ]
+// const result = arrToObj(testData)
+// console.log(result)
+
+// 将对象转换为数组
 export const objToArr = <T>(obj: { [key: string]: T }) => {
   return Object.keys(obj).map((key) => obj[key])
 }
 
-export const arrToObj = <T extends { _id?: string }>(arr: Array<T>) => {
-  return arr.reduce((prev, current) => {
-    if (current._id) {
-      prev[current._id] = current
-    }
-    return prev
-  }, {} as { [key: string]: T })
-}
+// // 下面是测试 objToArr 方法，将对象转换为数组
+// const testData2: { [key: string]: TestProps } = {
+//   1: { _id: '1', name: 'a' },
+//   2: { _id: '2', name: 'b' }
+// }
+// const result2 = objToArr(testData2)
+// console.log(result2)

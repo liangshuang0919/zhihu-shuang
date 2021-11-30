@@ -5,6 +5,9 @@ import { createStore, Commit } from 'vuex'
 // 导入 axios 网络封装模块
 import axios, { AxiosRequestConfig } from 'axios'
 
+// 导入 helper 中的自己封装的功能函数
+import { arrToObj, objToArr } from '../hooks/helper'
+
 // 导入 testData 中两个数据
 // testColumn 是首页专栏列表的数据
 // testPosts 是专栏详情页的列表数据
@@ -69,12 +72,17 @@ export interface ResponseType<P = {}> {
   data: P
 }
 
+// 定义一个类型，为了将 columns 和 posts 整合成一个类型
+interface ListProps<P> {
+  [id: string]: P
+}
+
 // 定义存储所有全局信息的接口
 export interface GlobalDataProps {
   user: UserProps // 用户信息
   token: string // 用户登录时，获取到的 token 令牌
-  columns: ColumnProps[] // 首页专栏列表数据展示的数据
-  posts: PostProps[] // 专栏详情页文章展示列表的数据类型
+  columns: { data: ListProps<ColumnProps>; currentPage: number; total: number } // 首页专栏列表数据展示的数据
+  posts: { data: ListProps<PostProps>; loadedColumns: string[] } // 专栏详情页文章展示列表的数据类型
   loading: boolean // 全局的一个数据请求的时候，一个等待的状态
   error: GlobalErrorProps // 错误信息
 }
@@ -83,36 +91,42 @@ export interface GlobalDataProps {
 // 参数一：是进行请求的 url 地址；类型是 string 类型
 // 参数二：是要进行数据处理的 mutations 方法；类型是 string 类型
 // 参数三：是 commit 方法；类型是 Commit 类型，需要从 vuex 中导入
-const getAndCommit = async (url: string, mutationName: string, commit: Commit) => {
-  const { data } = await axios.get(url)
-  commit(mutationName, data)
-  return data
-}
+// const getAndCommit = async (url: string, mutationName: string, commit: Commit) => {
+//   const { data } = await axios.get(url)
+//   commit(mutationName, data)
+//   return data
+// }
 
 // 封装 post 请求使用 async + await 进行异步处理请求的函数
 // 参数一：是进行请求的 url 地址；类型是 string 类型
 // 参数二：是要进行数据处理的 mutations 方法；类型是 string 类型
 // 参数三：是 commit 方法；类型是 Commit 类型，需要从 vuex 中导入
 // 参数四：是 post 请求需要传递的参数
-const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: string) => {
-  const { data } = await axios.post(url, payload)
-  commit(mutationName, data)
-  return data
-}
+// const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: string) => {
+//   const { data } = await axios.post(url, payload)
+//   commit(mutationName, data)
+//   return data
+// }
 
 // 封装一个可以处理多种请求的函数，既可以处理 GET、POST、PATCH 等等
 // 参数一：是进行请求的 url 地址；类型是 string 类型
 // 参数二：是要进行数据处理的 mutations 方法；类型是 string 类型
 // 参数三：是 commit 方法；类型是 Commit 类型，需要从 vuex 中导入
 // 参数四：config 就是 axios 要进行发送数据的请求配置，这个需要在 axios 中导入，默认是 GET 请求
+// 参数五：extraData 是一个可以额外传递的参数，可选的
 const asyncAndCommit = async (
   url: string,
   mutationName: string,
   commit: Commit,
-  config: AxiosRequestConfig = { method: 'GET' }
+  config: AxiosRequestConfig = { method: 'GET' },
+  extraData?: any
 ) => {
   const { data } = await axios(url, config)
-  commit(mutationName, data)
+  if (extraData) {
+    commit(mutationName, { data, extraData })
+  } else {
+    commit(mutationName, data)
+  }
   return data
 }
 
@@ -123,8 +137,8 @@ const store = createStore<GlobalDataProps>({
       isLogin: false // 用户登录状态信息
     },
     token: localStorage.getItem('token') || '', // 用户登录时的 token 令牌，没有的时候设为空
-    columns: [], // 首页专栏列表数据
-    posts: [], // 专栏详情页列表数据
+    columns: { data: {}, currentPage: 0, total: 0 }, // 首页专栏列表数据
+    posts: { data: {}, loadedColumns: [] }, // 专栏详情页列表数据
     loading: true, // 全局的一个数据请求的时候，一个等待的状态
     error: {
       status: false // 错误状态
@@ -139,34 +153,43 @@ const store = createStore<GlobalDataProps>({
     // 处理从后端获取的首页指定的一个专栏的数据
     // 第二个参数 rawData 是后端传递过来的数据
     fetchColumn(state, rawData) {
-      state.columns = [rawData.data]
+      state.columns.data[rawData.data._id] = rawData.data
     },
     // 处理从后端获取的首页专栏列表的数据
     fetchColumns(state, rawData) {
-      state.columns = rawData.data.list
+      const { data } = state.columns
+      // list 是后端返回的获取的具体某一页某几条专栏的数据对象
+      // count 是后端返回的首页专栏总数
+      const { list, count, currentPage } = rawData.data
+
+      state.columns = {
+        // 将原本的数据和新获取到的数据拼接在一起，并不是覆盖掉
+        data: { ...data, ...arrToObj(list) },
+        total: count, // 动态获取后端的总数据数
+        currentPage: currentPage * 1 // 把当前请求的标识符置为 true，不在重复发送请求
+      }
     },
     // 处理从后端获取的当前文章的详情数据
     fetchPost(state, rawData) {
-      state.posts = [rawData.data]
+      state.posts.data[rawData.data._id] = rawData.data
     },
     // 处理从后端获取的专栏详情页的数据
-    fetchPosts(state, rawData) {
-      state.posts = rawData.data.list
+    fetchPosts(state, { data: rawData, extraData: columnId }) {
+      // { ...state.posts.data, ...arrToObj(rawData.data.list) }
+      // 上面这种展开的操作，是为了将之前缓存的数据和后面新请求的数据进行一个拼接
+      state.posts.data = { ...state.posts.data, ...arrToObj(rawData.data.list) }
+      // 修改已经有的数组
+      state.posts.loadedColumns.push(columnId)
     },
     // 使用同步方法更新文章的内容
     updatePost(state, { data }) {
-      state.posts = state.posts.map((item) => {
-        // 获取到与当前文章 id 相同的文章数据
-        if (item._id === data._id) {
-          return data
-        } else {
-          return item
-        }
-      })
+      // 直接将原本的数据覆盖掉即可
+      state.posts.data[data._id] = data
     },
     // 使用同步方法删除文章
     deletePost(state, { data }) {
-      state.posts = state.posts.filter((item) => item._id !== data._id)
+      // 直接删除这个对应 id 的对象中的数据即可
+      delete state.posts.data[data._id]
     },
     // 页面请求数据的时候，对等待状态 loading 进行修改
     setLoading(state, status) {
@@ -206,55 +229,58 @@ const store = createStore<GlobalDataProps>({
     },
     // 创建新的文章
     createPost(state, rawData) {
-      state.posts.push(rawData)
+      state.posts.data[rawData._id] = rawData
     }
   },
   actions: {
     // 获取首页专栏列表的某一个专栏的具体的后端数据
-    fetchColumn({ commit }, columnId) {
-      // 使用封装的 get 请求函数，进行异步请求数据
-      return getAndCommit(`/columns/${columnId}`, 'fetchColumn', commit)
-
-      // 使用 async + await 异步处理请求
-      // const { data } = await axios.get(`/columns/${columnId}`)
-      // commit('fetchColumn', data)
-
-      // 未加 async + await 异步处理请求
-      // axios.get(`/columns/${columnId}`).then((res) => {
-      //   commit('fetchColumn', res.data)
-      // })
+    fetchColumn({ state, commit }, columnId) {
+      if (!state.columns.data[columnId]) {
+        // 使用封装的 get 请求函数，进行异步请求数据
+        return asyncAndCommit(`/columns/${columnId}`, 'fetchColumn', commit)
+      }
     },
     // 获取首页专栏列表的后端数据
-    fetchColumns({ commit }) {
-      // 使用封装的 get 请求函数，进行异步请求数据
-      return getAndCommit('/columns', 'fetchColumns', commit)
+    fetchColumns({ state, commit }, params = {}) {
+      // 发送首页加载专栏数据的时候，可以传递当前加载数据的页数和数据条数
+      const { currentPage = 1, pageSize = 6 } = params
 
-      // 使用 async + await 异步处理请求
-      // const { data } = await axios.get('/columns')
-      // commit('fetchColumns', data)
-
-      // 未加 async + await 异步处理请求
-      // axios.get('/columns').then((res) => {
-      //   context.commit('fetchColumns', res.data)
-      // })
+      // 如果存储的 currentPage 小于当前的 currentPage，说明之前没有请求过，就需要发送请求
+      if (state.columns.currentPage < currentPage) {
+        return asyncAndCommit(
+          `/columns?currentPage=${currentPage}&pageSize=${pageSize}`,
+          'fetchColumns',
+          commit
+        )
+      }
     },
     // 处理从后端获取的当前文章的详情数据
-    fetchPost({ commit }, columnId) {
-      return getAndCommit(`/posts/${columnId}`, 'fetchPost', commit)
+    fetchPost({ state, commit }, columnId) {
+      // 第一种将文章数据请求过来，是请求的完整的数据
+      // 第二种将文章数据请求过来，但是请求的是简介的内容，并不是详情内容
+      const currentPost = state.posts.data[columnId]
+      if (!currentPost || !currentPost.content) {
+        return asyncAndCommit(`/posts/${columnId}`, 'fetchPost', commit)
+      } else {
+        // 这个解决的是在 CreatedPost 组件中，因为进入编辑文章的时候，发送了 fetchPost 请求
+        // 并且后面跟着一个 then 回调，但是当我们第一次请求到数据的时候，并不会再发送请求，发送回调
+        // 这里就需要我手动创建一个 Promise 对象，返回数据
+        return Promise.resolve({ data: currentPost })
+      }
     },
     // 获取首专栏详情页的后端数据
-    fetchPosts({ commit }, columnId) {
-      // 使用封装的 get 请求函数，进行异步请求数据
-      return getAndCommit(`/columns/${columnId}/posts`, 'fetchPosts', commit)
-
-      // 使用 async + await 异步处理请求
-      // const { data } = await axios.get(`/columns/${columnId}/posts`)
-      // commit('fetchPosts', data)
-
-      // 未加 async + await 异步处理请求
-      // axios.get(`/columns/${columnId}/posts`).then((res) => {
-      //   commit('fetchPosts', res.data)
-      // })
+    fetchPosts({ state, commit }, columnId) {
+      // 如果给当前专栏设置了一个 columnId 额外的值，那么就不再发送请求；没有设置就正常发送请求并且设置
+      if (!state.posts.loadedColumns.includes(columnId)) {
+        // 使用封装的 get 请求函数，进行异步请求数据
+        return asyncAndCommit(
+          `/columns/${columnId}/posts`,
+          'fetchPosts',
+          commit,
+          { method: 'GET' },
+          columnId
+        )
+      }
     },
     // 更新文章的异步请求方法
     updatePost({ commit }, { id, payload }) {
@@ -272,17 +298,23 @@ const store = createStore<GlobalDataProps>({
     // 发送请求的时候，获取用户获取到的信息
     // 因为上面的 axios 更改了头信息，这里就可以获取到被 token 保护到的用户信息了
     fetchCurrentUser({ commit }) {
-      return getAndCommit('/user/current', 'fetchCurrentUser', commit)
+      return asyncAndCommit('/user/current', 'fetchCurrentUser', commit)
     },
     // 用户登录请求
     login({ commit }, payload) {
       // 使用封装的 post 请求函数，进行异步请求数据
-      return postAndCommit('/user/login', 'login', commit, payload)
+      return asyncAndCommit('/user/login', 'login', commit, {
+        method: 'POST',
+        data: payload
+      })
     },
     // 创建文章请求
     createPost({ commit }, payload) {
       // 使用封装的 post 请求函数，进行异步请求数据
-      return postAndCommit('/posts', 'createPost', commit, payload)
+      return asyncAndCommit('/posts', 'createPost', commit, {
+        method: 'POST',
+        data: payload
+      })
     },
     // 为了前端减少actions 的回调，这里使用到 vuex 提供的一个组和 actions 的方法
     // 这里组合的是 login action 和 fetchAndUser action 两个 action。
@@ -296,17 +328,20 @@ const store = createStore<GlobalDataProps>({
     }
   },
   getters: {
+    getColumns: (state) => {
+      return objToArr(state.columns.data)
+    },
     // 接收一个参数，返回首页专栏列表的具体某一个列表的 id
     getColumnById: (state) => (id: string) => {
-      return state.columns.find((item) => item._id === id)
+      return state.columns.data[id]
+    },
+    // 接收一个参数，返回具体的一个文章的内容
+    getPostById: (state) => (id: string) => {
+      return state.posts.data[id]
     },
     // 接收一个参数，某一个专栏的具体的文章内容
     getPostsById: (state) => (columnId: string) => {
-      return state.posts.filter((item) => item.column === columnId)
-    },
-    // 接收一个参数，返回具体的一个文章的内容
-    getPostById: (state) => (columnId: string) => {
-      return state.posts.find((item) => item._id === columnId)
+      return objToArr(state.posts.data).filter((item) => item.column === columnId)
     }
   }
 })
