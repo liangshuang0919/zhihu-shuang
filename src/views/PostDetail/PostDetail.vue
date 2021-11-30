@@ -2,7 +2,8 @@
   <!-- 文章详情页组件 -->
   <div class="post-detail-page">
     <!-- 删除文章的提示框组件 -->
-    <modal title="删除文章" :visible="modalIsVisible" @modal-on-close="modalIsVisible = false" @modal-on-confirm="hideAndDelete">
+    <modal title="删除文章" :visible="modalIsVisible" @modal-on-close="modalIsVisible = false"
+      @modal-on-confirm="hideAndDelete">
       <p>确定要删除这篇文章吗？</p>
     </modal>
 
@@ -28,8 +29,9 @@
       <div v-html="currentHTML"></div>
 
       <!-- 如果是自己的文字，则可以显示编辑删除按钮 -->
-      <div v-if="true" class="btn-group mt-5">
-        <router-link type="button" class="btn btn-success" :to="{name: 'createpost', query: {id: currentPost._id }}">
+      <div v-if="showEditArea" class="btn-group mt-5">
+        <router-link type="button" class="btn btn-success"
+          :to="{name: 'createpost', query: {id: currentPost._id }}">
           编辑
         </router-link>
         <button type="button" class="btn btn-danger" @click.prevent="modalIsVisible = true">删除</button>
