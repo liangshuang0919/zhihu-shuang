@@ -148,7 +148,7 @@ export default defineComponent({
         // 路由跳转
         setTimeout(() => {
           router.push({
-            name: 'column',
+            name: 'column-details',
             params: {
               id: rawData.data.column
             }

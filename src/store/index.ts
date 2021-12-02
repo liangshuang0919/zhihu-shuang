@@ -29,13 +29,22 @@ export interface UserProps {
   column?: number | string // 要新建文章的专栏的 id
   email?: string // 用户的登录邮箱
   avatar?: ImageProps
+  description?: string // 用户简介
 }
 
 // 定义的首页专栏列表的数据接口
 export interface ColumnProps {
-  _id: string // 专栏的标识符
+  _id?: string // 专栏的标识符
   title: string // 专栏的标题
   avatar?: ImageProps // 专栏的图片
+  description: string // 转浏览的描述
+}
+
+// 当前用户专栏数据接口
+export interface CurrentColumnProps {
+  _id?: string // 专栏的标识符
+  title: string // 专栏的标题
+  avatar?: ImageProps | string // 专栏的图片
   description: string // 转浏览的描述
 }
 
@@ -45,7 +54,7 @@ export interface PostProps {
   title: string // 文章的标题
   excerpt?: string // 文章的摘要
   content?: string // 文章的内容
-  image?: ImageProps // 文章的图片
+  image?: ImageProps | string // 文章的图片
   column?: string | number // 将专栏详情页的数据与首页的专栏区域的内容，一一对应起来
   createdAt?: string // 文章的时间
   author?: string | UserProps // 创建文章的用户 id
@@ -85,6 +94,7 @@ export interface GlobalDataProps {
   posts: { data: ListProps<PostProps>; loadedColumns: string[] } // 专栏详情页文章展示列表的数据类型
   loading: boolean // 全局的一个数据请求的时候，一个等待的状态
   error: GlobalErrorProps // 错误信息
+  currentColumn: { data: CurrentColumnProps; flag: boolean } // 当前用户的专栏信息
 }
 
 // 封装 get 请求，使用 async + await 进行异步处理请求的函数
@@ -142,14 +152,11 @@ const store = createStore<GlobalDataProps>({
     loading: true, // 全局的一个数据请求的时候，一个等待的状态
     error: {
       status: false // 错误状态
-    }
+    },
+    currentColumn: { data: { _id: '', title: '', description: '', avatar: {} }, flag: false } // 当前用户的专栏信息
   },
   // mutations 中有一些 rawData，表示的是通过 actions 异步请求获取到的原始数据
   mutations: {
-    // 登录时，修改登录信息
-    // login(state) {
-    //   state.user = { ...state.user, isLogin: true, userName: 'liangshuang' }
-    // },
     // 处理从后端获取的首页指定的一个专栏的数据
     // 第二个参数 rawData 是后端传递过来的数据
     fetchColumn(state, rawData) {
@@ -230,6 +237,18 @@ const store = createStore<GlobalDataProps>({
     // 创建新的文章
     createPost(state, rawData) {
       state.posts.data[rawData._id] = rawData
+    },
+    // 更新用户信息
+    updateUserInfo(state, rawData) {
+      state.user = { isLogin: true, ...rawData.data }
+    },
+    // 更新当前用户的专栏信息
+    getCurrentColumn(state, rawData) {
+      state.currentColumn.data = { ...rawData.data }
+    },
+    // 更新专栏信息
+    updateColumnInfo(state, rawData) {
+      state.currentColumn.data = { ...rawData.data }
     }
   },
   actions: {
@@ -324,6 +343,27 @@ const store = createStore<GlobalDataProps>({
     loginAndFetch({ dispatch }, loginData) {
       return dispatch('login', loginData).then(() => {
         return dispatch('fetchCurrentUser')
+      })
+    },
+    // 更新用户信息
+    updateUserInfo({ commit }, { columnId, payload }) {
+      return asyncAndCommit(`/user/${columnId}`, 'updateUserInfo', commit, {
+        method: 'PATCH',
+        data: payload
+      })
+    },
+    // 获取当前用户的专栏信息
+    getCurrentColumn({ state, commit }, columnId) {
+      if (!state.currentColumn.flag) {
+        state.currentColumn.flag = true // 设置标识符，防止重复请求
+        return asyncAndCommit(`/columns/${columnId}`, 'getCurrentColumn', commit)
+      }
+    },
+    // 更新专栏信息
+    updateColumnInfo({ commit }, { columnId, payload }) {
+      return asyncAndCommit(`/columns/${columnId}`, 'updateColumnInfo', commit, {
+        method: 'PATCH',
+        data: payload
       })
     }
   },

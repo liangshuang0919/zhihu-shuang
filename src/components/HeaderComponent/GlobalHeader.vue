@@ -24,7 +24,7 @@
           <drop-down :title="`你好 ${user ? user.nickName : '张三'}`">
             <!-- 编辑资料 -->
             <drop-down-item>
-              <a href="javascript:;" class="dropdown-item">编辑资料</a>
+              <router-link to="/editdata" class="dropdown-item">编辑资料</router-link>
             </drop-down-item>
             <!-- 新建文章 -->
             <drop-down-item>

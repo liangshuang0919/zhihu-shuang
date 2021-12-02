@@ -13,10 +13,11 @@ const routerHistory = createWebHashHistory()
 // 创建 vue-router 要加载的组件
 const Home = () => import('@/views/Home/Home.vue') // 首页页面
 const Login = () => import('@/views/Login/Login.vue') // 登录页页面
-const Register = () => import('@/views/Register/Register.vue') // 登录页页面
-const PostDetail = () => import('@/views/PostDetail/PostDetail.vue') // 文章详情页页面
+const Register = () => import('@/views/Register/Register.vue') // 注册页页面
 const ColumnDetails = () => import('@/views/ColumnDetails/ColumnDetails.vue') // 专栏详情页页面
+const PostDetail = () => import('@/views/PostDetail/PostDetail.vue') // 文章详情页页面
 const CreatePost = () => import('@/views/CreatePost/CreatePost.vue') // 创建文章页面
+const EditData = () => import('@/views/EditData/EditData.vue') // 编辑用户信息页面
 
 // 创建 vue-router 实例
 const router = createRouter({
@@ -50,20 +51,20 @@ const router = createRouter({
         title: 'Shuang-注册'
       }
     },
-    // 文章详情路由
-    {
-      path: '/post/:id',
-      name: 'post-detail',
-      component: PostDetail,
-      meta: {
-        title: 'Shuang-专栏详情'
-      }
-    },
     // 专栏详情路由
     {
       path: '/column/:id',
       name: 'column-details',
       component: ColumnDetails,
+      meta: {
+        title: 'Shuang-专栏详情'
+      }
+    },
+    // 文章详情路由
+    {
+      path: '/post/:id',
+      name: 'post-detail',
+      component: PostDetail,
       meta: {
         title: 'Shuang-专栏详情'
       }
@@ -75,6 +76,16 @@ const router = createRouter({
       component: CreatePost,
       meta: {
         title: 'Shuang-创建文章',
+        requiredLogin: true // 只有登录了的用户才能创建帖子
+      }
+    },
+    // 编辑用户资料路由
+    {
+      path: '/editdata',
+      name: 'editdata',
+      component: EditData,
+      meta: {
+        title: 'Shuang-编辑资料',
         requiredLogin: true // 只有登录了的用户才能创建帖子
       }
     }

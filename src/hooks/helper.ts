@@ -2,7 +2,12 @@
 import { ColumnProps, UserProps, ImageProps } from '../store'
 
 // 1、封装用来获取阿里云服务器上图片自定义的大小的函数
-export function generateFitUrl(data: ImageProps, width: number, height: number, format = ['m_pad']) {
+export function generateFitUrl(
+  data: ImageProps,
+  width: number,
+  height: number,
+  format = ['m_pad']
+) {
   if (data && data.url) {
     const formatStr = format.reduce((prev, current) => {
       return current + ',' + prev
@@ -60,7 +65,9 @@ export function addColumnAvatar(data: ColumnProps | UserProps, width: number, he
 
     // 改变专栏或用户数据的图片或头像
     data.avatar = {
-      fitUrl: require(parseCol.title ? '../assets/images/column.jpg' : '../assets/images/avatar.jpg')
+      fitUrl: require(parseCol.title
+        ? '../assets/images/column.jpg'
+        : '../assets/images/avatar.jpg')
     }
   }
 }

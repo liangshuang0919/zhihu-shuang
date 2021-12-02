@@ -64,21 +64,6 @@ export default defineComponent({
     // 获取全局的一个错误
     const error = computed(() => store.state.error)
 
-    // 获取 localstorage 中存储的 token
-    // const token = computed(() => store.state.token)
-
-    // 下面获取 token 的请求，已经不需要了，在 router 中的路由守卫在判断是否有 token 存在的时候，统一发送请求
-    // 当 App.vue 第一次加载的时候，判断 token 是否存在，并且用户还未登录的一个状态
-    // onMounted(() => {
-    //   if (!currentUser.value.isLogin && token.value) {
-    //     // 当用户还未登陆，并且 token 存在的时候，设置 axios 的 Authorization 头
-    //     axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
-
-    //     // 然后调用获取用户信息的方法
-    //     store.dispatch('fetchCurrentUser')
-    //   }
-    // })
-
     // 使用 watch 方法监控 error，发生改变时，对提示框实例进行判断显示不显示
     watch(
       // 参数一是一个回调函数，表示要监听的值
