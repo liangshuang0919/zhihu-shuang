@@ -6,8 +6,8 @@
       <!-- 输入邮箱区域（对应 ValidateForm.vue 组件的默认插槽） -->
       <div class="mb-3 w-50 input-area">
         <label for="exampleInputEmail" class="form-label">邮箱地址</label>
-        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules" v-model="formData.email"
-          ref="emailRef"></validate-input>
+        <validate-input id="exampleInputEmail" type="text" placeholder="请输入邮箱地址" :rules="emailRules"
+          v-model="formData.email" ref="emailRef"></validate-input>
       </div>
 
       <!-- 输入密码区域（对应 ValidateForm.vue 组件的默认插槽） -->
@@ -56,8 +56,8 @@ export default defineComponent({
 
     // 表单输入框中的内容
     const formData = reactive({
-      email: '1551724864@qq.com',
-      password: '123456'
+      email: '',
+      password: ''
     })
 
     // 初始化 router，用来定义路由的一系列行为
