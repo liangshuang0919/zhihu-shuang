@@ -66,7 +66,7 @@ const router = createRouter({
       name: 'post-detail',
       component: PostDetail,
       meta: {
-        title: 'Shuang-专栏详情'
+        title: 'Shuang-文章详情'
       }
     },
     // 新建文章路由

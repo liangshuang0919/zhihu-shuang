@@ -32,9 +32,7 @@
             </drop-down-item>
             <!-- 我的专栏 -->
             <drop-down-item>
-              <router-link to="/column/619e0a1eb558154f0392ee6a" class="dropdown-item">
-                我的专栏
-              </router-link>
+              <a href="javascript:;" class="dropdown-item" @click="currentColumn">我的专栏</a>
             </drop-down-item>
             <!-- 退出登录 -->
             <drop-down-item>
@@ -87,6 +85,16 @@ export default defineComponent({
     // 初始化 router 路由
     const router = useRouter()
 
+    // 前往当前用户的专栏
+    const currentColumn = () => {
+      router.push({
+        name: 'column-details',
+        params: {
+          id: store.state.user.column
+        }
+      })
+    }
+
     const logout = () => {
       // 清空用户信息
       store.state.user = {
@@ -105,7 +113,10 @@ export default defineComponent({
       }, 2000)
     }
 
-    return { logout }
+    return {
+      logout, // 退出
+      currentColumn // 前往当前用户的专栏
+    }
   }
 })
 </script>
