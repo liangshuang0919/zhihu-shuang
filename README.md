@@ -14,55 +14,89 @@
 
 ③ `src` 文件夹：项目书写的所有页面代码和资源
 
-1.  `assets` 文件夹：里面有 images 图片资源文件夹
-    
-2. `components` 文件夹：所有的页面组件
+1.  `assets` ：里面有 images 图片资源文件夹
 
-   ① `ColumnComponents` 文件夹：主页专栏的组件
+2. `components`
 
-   ​	Ⅰ. `ColumnList.vue` 文件：主页专栏列表展示的组件
+   ① `ColumnComponents`
 
-   ② `HeaderComponent` 文件夹：所有页面中 header 头部区域的组件
+   ​	Ⅰ. `ColumnList.vue` ：主页专栏列表展示的组件
+
+   ② `DropDownComponents`
+
+   ​	Ⅰ. `DropDown.vue`：头部下拉菜单组件
+
+   ​	Ⅱ. `DropDownItem.vue`：头部下拉菜单中每一个选项的组件
+
+   ③ `FooterConponent`
+
+   ​	Ⅰ. `GlobalFooter.vue`：全局底部区域组件
+
+   ④ `HeaderComponent`
 
    ​    Ⅰ. `GlobalHeader.vue` 文件：全局中头部组件
 
-   ③ `DropDownComponents`	 文件夹：头部组件右上角的下拉菜单
+   ⑤ `LoadingComponent `
 
-   ​	Ⅰ. `DropDown.vue` 文件：下拉菜单组件
+   ​	Ⅰ.  `Loading.vue`：全局的加载等待组件
 
-   ​	Ⅱ. `DropDownItem.vue wen` 文件：下拉菜单中每一个选项的组件
+   ⑥ `MessageComponents`
 
-   ④ `ValidateComponents` 文件夹：对表单进行处理
+   ​	Ⅰ. `Message.vue `：全局的一个模态框，提示确认取消的框
 
-   ​	Ⅰ.  `ValidateForm.vue` 文件：将表单整合一起，设置插槽
+   ⑦ `ModalComponent`
 
-   ​	Ⅱ. `ValidateInput.vue` 文件：表单验证规则、表单的数据双向绑定
+   ​	Ⅰ.  `Modal.vue`：全局的一个模态框，提示确认取消的框
 
-   ⑤`PostComponents` 文件夹：专栏详情页组件
+   ⑧ `PostComponent`
 
-   ​	Ⅰ. `PostHeader.vue` 文件：专栏详情页头部专栏简介组件
+   ​	Ⅰ. `PostList.vue`：专栏详情页，显示文章列表的组件
 
-   ​	Ⅱ.  `PostList.vue` 文件：专栏详情页中专栏列表展示组件
+   ⑨ `UploaderComponent`
 
-3. `data` 文件夹：所有用到的数据
+   ​	Ⅰ. `Uploader.vue`：上传文件的组件
 
-   ① `helper.ts` 文件：一些辅助（扩展功能）的方法
+   ⑩ `UseProfileComponent`
 
-   ② `store.ts` 文件：哥哥页面的数据类型模版和数据
+   ​	Ⅰ.  `UserProfile.vue`：展示文章中，用户信息那一栏的组件
 
-   ③ `testData.ts` 文件：测试用的数据
+   ⑪ `ValidateComponents`：对表单进行处理
 
-4. `hooks` 文件夹：自定义的各种方法
+   ​	Ⅰ.  `ValidateForm.vue`：将表单整合一起，设置插槽
 
-   ① `useClickOutside.ts` 文件：自定义的 `useClickOutside` 方法，点击 `header` 区域右上角的下拉列表以外的区域，下拉列表将会
+   ​	Ⅱ. `ValidateInput.vue`：表单验证规则、表单的数据双向绑定
 
-5. `router` 文件夹：`vue-router`
+3. `hooks`
 
-   ① `index.ts` 文件：`vue-router` 配置文件
+   ① `helper.ts`：自定义的各种全局的功能函数
 
-6. `views` 文件夹：vue 页面
-   ① `ColumnDetails` 文件夹中的 `ColumnDetails.vue` 文件是专栏详情页的页面
+   ② `useClickOutside.ts`：自定义的 useClickOutside 方法，点击 header 区域右上角的下拉列表以外的区域，下拉列表将会
 
-   ② `Home` 文件夹 中的 `Home.vue` 文件是主页页面
+   ③ `useDOMCreate.ts`：在全局中挂载一个有具体 id 的 div 节点并销毁的组件（为了方便 teleport 的使用）
 
-   ③ `Login` 文件夹 中的 `Login.vue` 文件 是登录页面
+   ④ `useLoadMore.ts` ：加载更多的方法
+
+   ⑤`useMessage.ts`：在全局中展示提示框的函数
+
+5. `router`
+
+   ① `index.ts` ：`vue-router` 配置文件
+
+5.  `store.ts`
+
+    ① `index.ts`：vuex 配置文件
+
+6. `views`
+   ① `ColumnDetails` 中的 `ColumnDetails.vue` 是专栏详情页的页面
+
+   ② `CreatePost` 中的 `CreatePost.vue` 是创建文章和编辑文章的页面
+
+   ③ `EditData` 中的 `EditData.vue` 是编辑用户资料的页面
+
+   ④ `Home` 中的 `Home.vue` 是主页页面
+
+   ⑤ `Login` 中的 `Login.vue` 是登录页面
+
+   ⑥ `PostDetail` 中的 `PostDetail.vue` 是文章详情页的页面
+
+   ⑦ `Register` 中的 `Register.vue` 是注册页面
