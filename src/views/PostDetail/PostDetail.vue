@@ -10,7 +10,7 @@
     <!-- 文章展示组件 -->
     <article class="w-75 mx-auto mb-5 pb-3" v-if="currentPost">
       <!-- 文章的图片 -->
-      <img :src="currentImageUrl" alt="currentPost.title" class="rounded-lg img-fluid my-4 current-mage"
+      <img :src="currentImageUrl" :alt="currentPost.title" class="rounded-lg img-fluid my-4 current-mage"
         :v-if="currentImageUrl ? true : false">
 
       <!-- 文章的标题 -->

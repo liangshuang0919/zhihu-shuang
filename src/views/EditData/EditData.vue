@@ -129,7 +129,7 @@ export default defineComponent({
     const columnImage = ref('')
 
     // 点击 ul 标签切换 li 的活跃状态
-    const change = (e) => {
+    const change = (e: any) => {
       if (!e.target.className.includes('active')) {
         isActive.value = !isActive.value // 切换活跃的 li
       }
@@ -138,7 +138,7 @@ export default defineComponent({
       const currentUserInfo = store.state.user
       const currentColumnInfo = store.state.currentColumn
 
-      if (e.target.innerText === '更新个人资料') {
+      if (e.target.innerText === '更新个人信息') {
         formData.titleVal = currentUserInfo.nickName
         formData.contentVal = currentUserInfo.description
       } else if (e.target.innerText === '更新专栏信息') {

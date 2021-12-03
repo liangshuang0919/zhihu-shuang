@@ -8,7 +8,8 @@
           <!-- 这个是测试数据所用的 -->
           <!-- <img :src="column.avatar" :alt="column.title" class="rounded-circle border border-weight w-25 my-3" /> -->
           <!-- 这个是真实的后端数据 -->
-          <img :src="column.avatar.url" :alt="column.title" class="rounded-circle border border-weight my-3" />
+          <img :src="column.avatar && column.avatar.url" :alt="column.title"
+            class="rounded-circle border border-weight my-3" />
 
           <!-- 专栏名称 -->
           <h5 class="card-title">{{ column.title }}</h5>
@@ -31,15 +32,12 @@
 // 导入 vue 中的方法
 import { defineComponent, PropType, computed } from 'vue'
 
-// 导入 vuex 中的数据类型接口, ImageProps
-import { ColumnProps } from '../../store'
+// 导入 vuex 中的数据类型接口
+import { ColumnProps, ImageProps } from '../../store'
 
 // 导入辅助的方法
 // generateFitUrl 方法是将图片进行获取自定义大小
-// import { generateFitUrl } from '../../data/helper'
-
-// 解决 require 报错的问题
-declare const require
+import { generateFitUrl } from '../../hooks/helper'
 
 export default defineComponent({
   name: 'ColumnList',
@@ -53,17 +51,11 @@ export default defineComponent({
     // 页面加载的时候，将专栏列表页所需要的数据进行便利操作
     const columnList = computed(() => {
       return props.list.map((column) => {
-        // 当专栏列表页没有图片的时候，默认使用本地的一张图片
-        if (!column.avatar) {
-          column.avatar.url = require('@/assets/images/column.jpg')
-        } else {
-          // 因为图片是从阿里云上获取的，可以控制图片的大小
-          // 这个表示将图片设为 50 * 50 的大小
-          column.avatar.url = column.avatar.url.split('?')[0] + '?x-oss-process=image/resize,m_pad,h_50,w_50'
+        // 使用封装的 generateFitUrl 用来获取阿里云服务器上图片自定义的大小
+        if (column.avatar && column.avatar.url) {
+          generateFitUrl(column.avatar.url as ImageProps, 200, 110, ['m_fill'])
         }
 
-        // 使用封装的 generateFitUrl 用来获取阿里云服务器上图片自定义的大小
-        // generateFitUrl(column.image as ImageProps, 200, 110, ['m_fill'])
         return column
       })
     })

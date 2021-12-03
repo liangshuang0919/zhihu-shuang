@@ -11,7 +11,7 @@
         <!-- 文章展示的信息 -->
         <div class="row my-3 align-items-center">
           <!-- 文章图片 -->
-          <div v-if="post.image.url" class="col-3 text-center">
+          <div v-if="post.image && post.image.url" class="col-3 text-center">
             <router-link :to="`/post/${post._id}/`">
               <img :src="post.image.url" :alt="post.title" class="rounded-lg w-75" />
             </router-link>
@@ -33,14 +33,11 @@
 import { defineComponent, PropType, computed } from 'vue'
 
 // 导入 vuex 中的数据类型接口, ImageProps
-import { PostProps } from '../../store'
+import { PostProps, ImageProps } from '../../store'
 
 // 导入辅助的方法
 // generateFitUrl 方法是将图片进行获取自定义大小
-// import { generateFitUrl } from '../../data/helper'
-
-// 解决 require 报错的问题
-declare const require
+import { generateFitUrl } from '../../hooks/helper'
 
 export default defineComponent({
   props: {
@@ -54,13 +51,8 @@ export default defineComponent({
     // 页面要渲染的文章列表的信息
     const posts = computed(() => {
       return props.list.map((post) => {
-        if (!post.image) {
-          post.image.url = require('@/assets/images/column.jpg')
-        } else {
-          post.image.url = post.image.url.split('?')[0] + '?x-oss-process=image/resize,m_pad,h_50,w_50'
-        }
         // 使用封装的 generateFitUrl 用来获取阿里云服务器上图片自定义的大小
-        // generateFitUrl(post.image as ImageProps, 200, 110, ['m_fill'])
+        generateFitUrl(post.image as ImageProps, 200, 110, ['m_fill'])
         return post
       })
     })

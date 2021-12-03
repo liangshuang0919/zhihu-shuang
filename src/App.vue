@@ -6,8 +6,7 @@
   <!-- 页面内容区域 -->
   <div class="container">
     <!-- loading 页面 -->
-    <!-- <loading text="客观稍安勿躁，小的正在拼命加载中..." bgcolor="rgba(0,0,0,0.8)" v-if="isLoading"></loading> -->
-    <loading text="客观稍安勿躁，小的正在拼命加载中..." bgcolor="rgba(0,0,0,0.8)" v-if="false"></loading>
+    <loading text="客观稍安勿躁，小的正在拼命加载中..." bgcolor="rgba(0,0,0,0.8)" v-if="isLoading"></loading>
 
     <!-- 页面内容区域 -->
     <router-view></router-view>
@@ -78,7 +77,7 @@ export default defineComponent({
     )
 
     return {
-      currentUser: currentUser, // GlobalHeader.vue 组件的数据
+      currentUser, // GlobalHeader.vue 组件的数据
       isLoading, // 数据请求时的等待状态 loading
       error // 错误信息
     }

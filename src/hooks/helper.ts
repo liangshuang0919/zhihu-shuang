@@ -12,7 +12,8 @@ export function generateFitUrl(
     const formatStr = format.reduce((prev, current) => {
       return current + ',' + prev
     }, '')
-    data.fitUrl = data.url + `?x-oss-process=image/resize,${formatStr}h_${height},w_${width}`
+    data.url =
+      data.url.split('?')[0] + `?x-oss-process=image/resize,${formatStr}h_${height},w_${width}`
   }
 }
 
